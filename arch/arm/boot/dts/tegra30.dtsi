@@ -337,7 +337,7 @@
 		interrupt-parent = <&intc>;
 	};
 
-	cache-controller@50043000 {
+	l2c: cache-controller@50043000 {
 		compatible = "arm,pl310-cache";
 		reg = <0x50043000 0x1000>;
 		arm,data-latency = <6 6 2>;
@@ -1418,6 +1418,7 @@
 			compatible = "arm,cortex-a9";
 			reg = <0>;
 			clocks = <&tegra_car TEGRA30_CLK_CCLK_G>;
+			next-level-cache = <&l2c>;
 			#cooling-cells = <2>;
 		};
 
@@ -1426,6 +1427,7 @@
 			compatible = "arm,cortex-a9";
 			reg = <1>;
 			clocks = <&tegra_car TEGRA30_CLK_CCLK_G>;
+			next-level-cache = <&l2c>;
 			#cooling-cells = <2>;
 		};
 
@@ -1434,6 +1436,7 @@
 			compatible = "arm,cortex-a9";
 			reg = <2>;
 			clocks = <&tegra_car TEGRA30_CLK_CCLK_G>;
+			next-level-cache = <&l2c>;
 			#cooling-cells = <2>;
 		};
 
@@ -1442,6 +1445,7 @@
 			compatible = "arm,cortex-a9";
 			reg = <3>;
 			clocks = <&tegra_car TEGRA30_CLK_CCLK_G>;
+			next-level-cache = <&l2c>;
 			#cooling-cells = <2>;
 		};
 	};
