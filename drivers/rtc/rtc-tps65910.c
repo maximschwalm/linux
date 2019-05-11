@@ -46,13 +46,14 @@ struct tps65910_rtc {
 static int tps65910_rtc_alarm_irq_enable(struct device *dev,
 					 unsigned int enabled)
 {
-	struct tps65910 *tps = dev_get_drvdata(dev->parent);
+	struct tps65910_rtc *tps = dev_get_drvdata(dev);
+	struct regmap *regmap = rtc_get_regmap(tps->rtc);
 	u8 val = 0;
 
 	if (enabled)
 		val = TPS65910_RTC_INTERRUPTS_IT_ALARM;
 
-	return regmap_write(tps->regmap, TPS65910_RTC_INTERRUPTS, val);
+	return regmap_write(regmap, TPS65910_RTC_INTERRUPTS, val);
 }
 
 /*
@@ -66,50 +67,36 @@ static int tps65910_rtc_alarm_irq_enable(struct device *dev,
  */
 static int tps65910_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
-	unsigned char rtc_data[NUM_TIME_REGS];
-	struct tps65910 *tps = dev_get_drvdata(dev->parent);
+	struct tps65910_rtc *tps = dev_get_drvdata(dev);
+	struct regmap *regmap = rtc_get_regmap(tps->rtc);
 	int ret;
 
 	/* Copy RTC counting registers to static registers or latches */
-	ret = regmap_update_bits(tps->regmap, TPS65910_RTC_CTRL,
+	ret = regmap_update_bits(regmap, TPS65910_RTC_CTRL,
 		TPS65910_RTC_CTRL_GET_TIME, TPS65910_RTC_CTRL_GET_TIME);
 	if (ret < 0) {
 		dev_err(dev, "RTC CTRL reg update failed with err:%d\n", ret);
 		return ret;
 	}
 
-	ret = regmap_bulk_read(tps->regmap, TPS65910_SECONDS, rtc_data,
-		NUM_TIME_REGS);
+	ret = rtc_regmap_read_time(tps->rtc, tm, TPS65910_SECONDS,
+				   RTC_HAS_WDAY | RTC_AMPM_BIT7);
 	if (ret < 0) {
 		dev_err(dev, "reading from RTC failed with err:%d\n", ret);
 		return ret;
 	}
 
-	tm->tm_sec = bcd2bin(rtc_data[0]);
-	tm->tm_min = bcd2bin(rtc_data[1]);
-	tm->tm_hour = bcd2bin(rtc_data[2]);
-	tm->tm_mday = bcd2bin(rtc_data[3]);
-	tm->tm_mon = bcd2bin(rtc_data[4]) - 1;
-	tm->tm_year = bcd2bin(rtc_data[5]) + 100;
-
-	return ret;
+	return 0;
 }
 
 static int tps65910_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
-	unsigned char rtc_data[NUM_TIME_REGS];
-	struct tps65910 *tps = dev_get_drvdata(dev->parent);
+	struct tps65910_rtc *tps = dev_get_drvdata(dev);
+	struct regmap *regmap = rtc_get_regmap(tps->rtc);
 	int ret;
 
-	rtc_data[0] = bin2bcd(tm->tm_sec);
-	rtc_data[1] = bin2bcd(tm->tm_min);
-	rtc_data[2] = bin2bcd(tm->tm_hour);
-	rtc_data[3] = bin2bcd(tm->tm_mday);
-	rtc_data[4] = bin2bcd(tm->tm_mon + 1);
-	rtc_data[5] = bin2bcd(tm->tm_year - 100);
-
 	/* Stop RTC while updating the RTC time registers */
-	ret = regmap_update_bits(tps->regmap, TPS65910_RTC_CTRL,
+	ret = regmap_update_bits(regmap, TPS65910_RTC_CTRL,
 		TPS65910_RTC_CTRL_STOP_RTC, 0);
 	if (ret < 0) {
 		dev_err(dev, "RTC stop failed with err:%d\n", ret);
@@ -117,15 +104,15 @@ static int tps65910_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	}
 
 	/* update all the time registers in one shot */
-	ret = regmap_bulk_write(tps->regmap, TPS65910_SECONDS, rtc_data,
-		NUM_TIME_REGS);
+	ret = rtc_regmap_set_time(tps->rtc, tm, TPS65910_SECONDS,
+				  RTC_HAS_WDAY);
 	if (ret < 0) {
 		dev_err(dev, "rtc_set_time error %d\n", ret);
 		return ret;
 	}
 
 	/* Start back RTC */
-	ret = regmap_update_bits(tps->regmap, TPS65910_RTC_CTRL,
+	ret = regmap_update_bits(regmap, TPS65910_RTC_CTRL,
 		TPS65910_RTC_CTRL_STOP_RTC, 1);
 	if (ret < 0)
 		dev_err(dev, "RTC start failed with err:%d\n", ret);
@@ -138,26 +125,19 @@ static int tps65910_rtc_set_time(struct device *dev, struct rtc_time *tm)
  */
 static int tps65910_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 {
-	unsigned char alarm_data[NUM_TIME_REGS];
+	struct tps65910_rtc *tps = dev_get_drvdata(dev);
+	struct regmap *regmap = rtc_get_regmap(tps->rtc);
 	u32 int_val;
-	struct tps65910 *tps = dev_get_drvdata(dev->parent);
 	int ret;
 
-	ret = regmap_bulk_read(tps->regmap, TPS65910_ALARM_SECONDS, alarm_data,
-		NUM_TIME_REGS);
+	ret = rtc_regmap_read_time(tps->rtc, &alm->time,
+				   TPS65910_ALARM_SECONDS, RTC_AMPM_BIT7);
 	if (ret < 0) {
 		dev_err(dev, "rtc_read_alarm error %d\n", ret);
 		return ret;
 	}
 
-	alm->time.tm_sec = bcd2bin(alarm_data[0]);
-	alm->time.tm_min = bcd2bin(alarm_data[1]);
-	alm->time.tm_hour = bcd2bin(alarm_data[2]);
-	alm->time.tm_mday = bcd2bin(alarm_data[3]);
-	alm->time.tm_mon = bcd2bin(alarm_data[4]) - 1;
-	alm->time.tm_year = bcd2bin(alarm_data[5]) + 100;
-
-	ret = regmap_read(tps->regmap, TPS65910_RTC_INTERRUPTS, &int_val);
+	ret = regmap_read(regmap, TPS65910_RTC_INTERRUPTS, &int_val);
 	if (ret < 0)
 		return ret;
 
@@ -169,24 +149,15 @@ static int tps65910_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 
 static int tps65910_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
 {
-	unsigned char alarm_data[NUM_TIME_REGS];
-	struct tps65910 *tps = dev_get_drvdata(dev->parent);
+	struct tps65910_rtc *tps = dev_get_drvdata(dev);
 	int ret;
 
 	ret = tps65910_rtc_alarm_irq_enable(dev, 0);
 	if (ret)
 		return ret;
 
-	alarm_data[0] = bin2bcd(alm->time.tm_sec);
-	alarm_data[1] = bin2bcd(alm->time.tm_min);
-	alarm_data[2] = bin2bcd(alm->time.tm_hour);
-	alarm_data[3] = bin2bcd(alm->time.tm_mday);
-	alarm_data[4] = bin2bcd(alm->time.tm_mon + 1);
-	alarm_data[5] = bin2bcd(alm->time.tm_year - 100);
-
-	/* update all the alarm registers in one shot */
-	ret = regmap_bulk_write(tps->regmap, TPS65910_ALARM_SECONDS,
-		alarm_data, NUM_TIME_REGS);
+	ret = rtc_regmap_set_time(tps->rtc, &alm->time,
+				  TPS65910_ALARM_SECONDS, 0);
 	if (ret) {
 		dev_err(dev, "rtc_set_alarm error %d\n", ret);
 		return ret;
@@ -383,7 +354,8 @@ static int tps65910_rtc_probe(struct platform_device *pdev)
 	if (!tps_rtc)
 		return -ENOMEM;
 
-	tps_rtc->rtc = devm_rtc_allocate_device(&pdev->dev);
+	tps_rtc->rtc = devm_rtc_regmap_allocate_device(&pdev->dev,
+						       tps65910->regmap);
 	if (IS_ERR(tps_rtc->rtc))
 		return PTR_ERR(tps_rtc->rtc);
 
@@ -430,9 +402,6 @@ static int tps65910_rtc_probe(struct platform_device *pdev)
 		tps_rtc->rtc->ops = &tps65910_rtc_ops;
 	} else
 		tps_rtc->rtc->ops = &tps65910_rtc_ops_noirq;
-
-	tps_rtc->rtc->range_min = RTC_TIMESTAMP_BEGIN_2000;
-	tps_rtc->rtc->range_max = RTC_TIMESTAMP_END_2099;
 
 	return devm_rtc_register_device(tps_rtc->rtc);
 }
