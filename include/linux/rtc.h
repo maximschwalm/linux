@@ -13,6 +13,7 @@
 #define _LINUX_RTC_H_
 
 
+#include <linux/bitfield.h>
 #include <linux/types.h>
 #include <linux/interrupt.h>
 #include <linux/nvmem-provider.h>
@@ -257,4 +258,35 @@ int rtc_add_groups(struct rtc_device *rtc, const struct attribute_group **grps)
 	return 0;
 }
 #endif
+
+struct regmap;
+
+/* flags for regmap functions */
+enum {
+	RTC_HAS_WDAY = BIT(0),
+	RTC_HAS_WDAY_MIDDLE = BIT(1),
+	RTC_SET_12HR = BIT(2),
+	RTC_12HR_MASK = GENMASK(5, 3),
+		RTC_12HR_BIT5 = BIT(3),
+		RTC_12HR_BIT6 = BIT(4),
+		RTC_12HR_BIT7 = BIT(5),
+	RTC_AMPM_MASK = GENMASK(8, 6),
+		RTC_AMPM_BIT5 = BIT(6),
+		RTC_AMPM_BIT6 = BIT(7),
+		RTC_AMPM_BIT7 = BIT(8),
+};
+
+struct rtc_device *devm_rtc_regmap_allocate_device(struct device *dev,
+						   struct regmap *regmap);
+
+int rtc_regmap_read_time(struct rtc_device *rtc, struct rtc_time *tm,
+			 unsigned reg_base, unsigned flags);
+int rtc_regmap_set_time(struct rtc_device *rtc, const struct rtc_time *tm,
+			unsigned reg_base, unsigned flags);
+
+static inline struct regmap *rtc_get_regmap(const struct rtc_device *rtc)
+{
+	return dev_get_drvdata(&rtc->dev);
+}
+
 #endif /* _LINUX_RTC_H_ */

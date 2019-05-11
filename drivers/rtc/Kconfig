@@ -83,6 +83,12 @@ config RTC_NVMEM
 	  Say yes here to add support for the non volatile (often battery
 	  backed) storage present on RTCs.
 
+config RTC_REGMAP_LIB
+	bool "RTC library for regmap-based drivers"
+	help
+	  This is selected by the drivers. Say no here unless you expect to
+	  build dependent out-of-tree driver modules.
+
 comment "RTC interfaces"
 
 config RTC_INTF_SYSFS
