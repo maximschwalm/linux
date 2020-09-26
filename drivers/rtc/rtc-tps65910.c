@@ -383,16 +383,13 @@ static int tps65910_rtc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, tps_rtc);
 
-	irq  = platform_get_irq(pdev, 0);
-	if (irq <= 0) {
-		dev_warn(&pdev->dev, "Wake up is not possible as irq = %d\n",
-			irq);
-		return -ENXIO;
-	}
-
-	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
-		tps65910_rtc_interrupt, IRQF_TRIGGER_LOW,
-		dev_name(&pdev->dev), &pdev->dev);
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0)
+		ret = irq;
+	else
+		ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
+			tps65910_rtc_interrupt, IRQF_TRIGGER_LOW,
+			dev_name(&pdev->dev), &pdev->dev);
 	if (ret < 0)
 		irq = -1;
 
@@ -400,8 +397,10 @@ static int tps65910_rtc_probe(struct platform_device *pdev)
 	if (irq != -1) {
 		device_set_wakeup_capable(&pdev->dev, 1);
 		tps_rtc->rtc->ops = &tps65910_rtc_ops;
-	} else
+	} else {
+		dev_warn(&pdev->dev, "Wake up is not possible without IRQ");
 		tps_rtc->rtc->ops = &tps65910_rtc_ops_noirq;
+	}
 
 	return devm_rtc_register_device(tps_rtc->rtc);
 }
