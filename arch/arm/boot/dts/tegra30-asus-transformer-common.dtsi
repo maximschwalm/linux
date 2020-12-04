@@ -59,14 +59,9 @@
 			ecc-size = <16>;
 		};
 
-		framebuffer@abc01000 {
-			reg = <0xabc01000 0x3e9000>;
-			no-map;
-		};
-
-		lp0_vec@bddf9000 {
-			reg = <0xbddf9000 0x2000>;	// passed from bootloader (ATAGS/NVIDIA, cmdline)
-		};
+//		lp0_vec@bddf9000 {
+//			reg = <0xbddf9000 0x2000>;	// passed from bootloader (ATAGS/NVIDIA, cmdline)
+//		};
 
 		trustzone@bfe00000 {
 			/* used by TF firmware */
@@ -1023,8 +1018,8 @@
 			interrupt-parent = <&gpio>;
 			interrupts = <TEGRA_GPIO(X, 1) IRQ_TYPE_EDGE_RISING>;		// mpu3050, in, lo
 
-			vdd-supply   = <&vdd_3v3_sys>;
-			vddio-supply = <&vdd_1v8>;
+			vdd-supply    = <&vdd_3v3_sys>;
+			vlogic-supply = <&vdd_1v8>;
 
 			accel-slave = <&accel>;
 			compass-slave = <&compass>;
@@ -1036,6 +1031,7 @@
 				accel: accel@f {
 					compatible = "kionix,kxtf9";
 					reg = <0x0f>;
+
 					interrupt-parent = <&gpio>;
 					interrupts = <TEGRA_GPIO(O, 5) IRQ_TYPE_EDGE_RISING>;	// kxtf9, in, lo
 				};
@@ -1043,8 +1039,12 @@
 				compass: compass@e {
 					compatible = "aichi,ami306";
 					reg = <0x0e>;
+
 					interrupt-parent = <&gpio>;
 					interrupts = <TEGRA_GPIO(W, 0) IRQ_TYPE_EDGE_RISING>;	// compassirq
+
+					avdd-supply = <&vdd_3v3_sys>;
+					dvdd-supply = <&vdd_1v8>;
 				};
 			};
 		};
@@ -1276,7 +1276,7 @@
 		nvidia,core-pwr-off-time = <0>;
 		nvidia,core-power-req-active-high;
 		nvidia,sys-clock-req-active-high;
-		nvidia,lp0-vec = <0xbddf9000 0x2000>;	// passed by bootloader
+//		nvidia,lp0-vec = <0xbddf9000 0x2000>;	// passed by bootloader
 
 		/* Set DEV_OFF + PWR_OFF_SET bit in DCDC control register of TPS65911 PMIC  */
 		i2c-thermtrip {
@@ -1364,9 +1364,10 @@
 	usb-phy@7d000000 {		/* phy1 */
 		status = "okay";
 		dr_mode = "peripheral";
-		nvidia,hssync-start-delay = <0>;
+		nvidia,xcvr-setup-use-fuses;
 		nvidia,xcvr-lsfslew = <2>;
 		nvidia,xcvr-lsrslew = <2>;
+		vbus-supply = <&vdd_5v0_sys>; /* This should be GPIO based fixed reg if any GPIO will be found */
 	};
 
 	/* Dock's USB port */
@@ -1376,6 +1377,10 @@
 
 	usb-phy@7d008000 {		/* phy3 */
 		status = "okay";
+		nvidia,xcvr-setup-use-fuses;
+		nvidia,xcvr-lsfslew = <2>;
+		nvidia,xcvr-lsrslew = <2>;
+		vbus-supply = <&vdd_5v0_sys>; /* This should be GPIO based fixed reg if any GPIO will be found */
 	};
 
 	backlight_lvds: backlight-lvds {
@@ -1540,6 +1545,18 @@
 			};
 		};
 	};
+};
+
+&emc_icc_dvfs_opp_table {
+	/delete-node/ opp@750000000,1300;
+	/delete-node/ opp@800000000,1300;
+	/delete-node/ opp@900000000,1350;
+};
+
+&emc_bw_dfs_opp_table {
+	/delete-node/ opp@750000000;
+	/delete-node/ opp@800000000;
+	/delete-node/ opp@900000000;
 };
 
 /*
