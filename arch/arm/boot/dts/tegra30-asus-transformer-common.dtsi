@@ -12,6 +12,10 @@
 
 / {
 	aliases {
+		mmc0 = &sdmmc4;	/* eMMC */
+		mmc1 = &sdmmc1; /* uSD slot */
+		mmc2 = &sdmmc3; /* WiFi */
+
 		rtc0 = &pmic;
 		rtc1 = "/rtc@7000e000";
 
@@ -72,11 +76,17 @@
 	};
 
 	gpio@6000d000 {
-		usb_charge_limit {
+		usb_charge_limit-hog {
 			gpio-hog;
 			gpios = <TEGRA_GPIO(R, 1) GPIO_ACTIVE_LOW>;	// LIMIT_SET0, out, lo; @tegra_udc.LIMIT_PWR [0 = 0.5A, 1 = 1A]
 			output-high;
 		};
+	};
+
+	vde@6001a000 {
+		assigned-clocks = <&tegra_car TEGRA30_CLK_VDE>;
+		assigned-clock-parents = <&tegra_car TEGRA30_CLK_PLL_P>;
+		assigned-clock-rates = <408000000>;
 	};
 
 	pinmux@70000868 {
@@ -1009,8 +1019,13 @@
 		gyro@68 {
 			compatible = "invensense,mpu3050";
 			reg = <0x68>;
+
 			interrupt-parent = <&gpio>;
 			interrupts = <TEGRA_GPIO(X, 1) IRQ_TYPE_EDGE_RISING>;		// mpu3050, in, lo
+
+			vdd-supply   = <&vdd_3v3_sys>;
+			vddio-supply = <&vdd_1v8>;
+
 			accel-slave = <&accel>;
 			compass-slave = <&compass>;
 
@@ -1283,8 +1298,7 @@
 		};
 	};
 
-	/* uSD slot on left side */
-	mmc@78000000 {		/* sdmmc1 */
+	sdmmc1: mmc@78000000 {
 		status = "okay";
 
 		cd-gpios = <&gpio TEGRA_GPIO(I, 5) GPIO_ACTIVE_LOW>;	// sdhci_cd, in, lo [card in]
@@ -1305,13 +1319,17 @@
 		power-off-delay-us = <300>;
 	};
 
-	/* internal SDIO WiFi */
-	mmc@78000400 {		/* sdmmc3 */
+	sdmmc3: mmc@78000400 {
 		status = "okay";
 
 		#address-cells = <1>;
 		#size-cells = <0>;
 
+		assigned-clocks = <&tegra_car TEGRA30_CLK_SDMMC3>;
+		assigned-clock-parents = <&tegra_car TEGRA30_CLK_PLL_C>;
+		assigned-clock-rates = <50000000>;
+
+		max-frequency = <50000000>;
 		keep-power-in-suspend;
 		bus-width = <4>;
 		non-removable;
@@ -1328,8 +1346,7 @@
 		};
 	};
 
-	/* internal eMMC */
-	mmc@78000600 {		/* sdmmc4 */
+	sdmmc4: mmc@78000600 {
 		status = "okay";
 		bus-width = <8>;
 		vmmc-supply = <&vcore_emmc>;
@@ -1373,19 +1390,17 @@
 		default-brightness-level = <15>;
 	};
 
-	clocks {
-		compatible = "simple-bus";
-		#address-cells = <1>;
-		#size-cells = <0>;
+	core-domain {
+		power-supply = <&vdd_core>;
+	};
 
-		/* PMIC has a built-in 32KHz oscillator which is used by PMC */
-		clk32k_in: clock@0 {
-			compatible = "fixed-clock";
-			reg = <0>;
-			#clock-cells = <0>;
-			clock-frequency = <32768>;
-			clock-output-names = "pmic-oscillator";
-		};
+	/* PMIC has a built-in 32KHz oscillator which is used by PMC */
+	clk32k_in: clock@0 {
+		compatible = "fixed-clock";
+		reg = <0>;
+		#clock-cells = <0>;
+		clock-frequency = <32768>;
+		clock-output-names = "pmic-oscillator";
 	};
 
 	cpus {
@@ -1488,14 +1503,14 @@
 	};
 
 	thermal-zones {
-		nct72-local {
+		skin-thermal {
 			polling-delay-passive = <1000>; /* milliseconds */
 			polling-delay = <0>; /* milliseconds */
 
 			thermal-sensors = <&nct72 0>;
 		};
 
-		nct72-remote {
+		cpu-thermal {
 			polling-delay-passive = <1000>; /* milliseconds */
 			polling-delay = <5000>; /* milliseconds */
 
@@ -1503,9 +1518,9 @@
 
 			trips {
 				trip0: cpu-alert0 {
-					/* start throttling at 50C */
-					temperature = <50000>;
-					hysteresis = <3000>;
+					/* throttle at 57C until temperature drops to 56.8C */
+					temperature = <57000>;
+					hysteresis = <200>;
 					type = "passive";
 				};
 
