@@ -62,7 +62,7 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-			kb_col4_pq4 {
+			kb_row7_pr7 {
 				nvidia,pins = "kb_row7_pr7";
 				nvidia,function = "kbc";
 				nvidia,pull = <TEGRA_PIN_PULL_UP>;

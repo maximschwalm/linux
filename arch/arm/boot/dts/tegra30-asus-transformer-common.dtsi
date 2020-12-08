@@ -109,7 +109,7 @@
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
 
-			/* SDMMC3 pinmux */
+			/* SDMMC2 pinmux */
 			vi_d1_pd5 {
 				nvidia,pins = "vi_d1_pd5",
 						"vi_d2_pl0",
