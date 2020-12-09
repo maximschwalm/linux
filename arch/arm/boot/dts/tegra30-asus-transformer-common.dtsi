@@ -1148,20 +1148,21 @@
 
 				vdd2_reg: vdd2 {
 					regulator-name = "vdd2_1v2";
-					regulator-min-microvolt = <1200000>;
-					regulator-max-microvolt = <1200000>;
+					regulator-min-microvolt = <600000>;
+					regulator-max-microvolt = <1500000>;
 					regulator-always-on;
 					regulator-boot-on;
 				};
 
 				vdd_cpu: vddctrl {
 					regulator-name = "vdd_cpu,vdd_sys";
-					regulator-min-microvolt = <800000>;
-					regulator-max-microvolt = <1250000>;
+					regulator-min-microvolt = <600000>;
+					regulator-max-microvolt = <1400000>;
 					regulator-coupled-with = <&vdd_core>;
 					regulator-coupled-max-spread = <300000>;
 					regulator-max-step-microvolt = <100000>;
 					regulator-always-on;
+					regulator-boot-on;
 					ti,regulator-ext-sleep-control = <1>;
 
 					nvidia,tegra-cpu-regulator;
@@ -1169,8 +1170,8 @@
 
 				vdd_1v8: vio {
 					regulator-name = "vdd_1v8_gen";
-					regulator-min-microvolt = <1800000>;
-					regulator-max-microvolt = <1800000>;
+					regulator-min-microvolt = <1500000>;
+					regulator-max-microvolt = <3300000>;
 					regulator-always-on;
 					regulator-boot-on;
 				};
@@ -1187,7 +1188,7 @@
 				vdd_usd: ldo2 {
 					regulator-name = "vdd_sata,avdd_plle";
 					regulator-min-microvolt = <1050000>;
-					regulator-max-microvolt = <1050000>;
+					regulator-max-microvolt = <3300000>;
 				};
 
 				/* uSD slot VDDIO */
@@ -1199,15 +1200,15 @@
 
 				ldo4 {
 					regulator-name = "vdd_rtc";
-					regulator-min-microvolt = <1200000>;
-					regulator-max-microvolt = <1200000>;
+					regulator-min-microvolt = <1000000>;
+					regulator-max-microvolt = <3300000>;
 					regulator-always-on;
 				};
 
 				ldo5 {
 					regulator-name = "vddio_sdmmc,avdd_vdac";
-					regulator-min-microvolt = <1800000>;
-					regulator-max-microvolt = <1800000>;
+					regulator-min-microvolt = <1000000>;
+					regulator-max-microvolt = <3300000>;
 				};
 
 				ldo6 {
@@ -1228,7 +1229,7 @@
 				ldo8 {
 					regulator-name = "vdd_ddr_hs";
 					regulator-min-microvolt = <1000000>;
-					regulator-max-microvolt = <1000000>;
+					regulator-max-microvolt = <3300000>;
 					regulator-always-on;
 					ti,regulator-ext-sleep-control = <8>;
 				};
@@ -1241,7 +1242,7 @@
 
 			regulator-name = "tps62361-vout";
 			regulator-min-microvolt = <500000>;
-			regulator-max-microvolt = <1350000>;
+			regulator-max-microvolt = <1770000>;
 			regulator-coupled-with = <&vdd_cpu>;
 			regulator-coupled-max-spread = <300000>;
 			regulator-max-step-microvolt = <100000>;
