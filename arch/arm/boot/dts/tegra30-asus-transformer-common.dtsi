@@ -59,10 +59,6 @@
 			ecc-size = <16>;
 		};
 
-//		lp0_vec@bddf9000 {
-//			reg = <0xbddf9000 0x2000>;	// passed from bootloader (ATAGS/NVIDIA, cmdline)
-//		};
-
 		trustzone@bfe00000 {
 			/* used by TF firmware */
 			reg = <0xbfe00000 0x200000>;	/* 2MB */
@@ -1359,7 +1355,6 @@
 		nvidia,core-pwr-off-time = <0>;
 		nvidia,core-power-req-active-high;
 		nvidia,sys-clock-req-active-high;
-//		nvidia,lp0-vec = <0xbddf9000 0x2000>;	// passed by bootloader
 
 		/* Set DEV_OFF + PWR_OFF_SET bit in DCDC control register of TPS65911 PMIC  */
 		i2c-thermtrip {
