@@ -1447,10 +1447,12 @@
 	usb-phy@7d000000 {		/* phy1 */
 		status = "okay";
 		dr_mode = "peripheral";
-		nvidia,xcvr-setup-use-fuses;
+		nvidia,hssync-start-delay = <0>;
+		/delete-property/ nvidia,xcvr-setup-use-fuses;
+		nvidia,xcvr-setup = <5>;      /* Based on TF201 fuse value - 48 */
 		nvidia,xcvr-lsfslew = <2>;
 		nvidia,xcvr-lsrslew = <2>;
-		vbus-supply = <&vdd_5v0_sys>; /* This should be GPIO based fixed reg if any GPIO will be found */
+		vbus-supply = <&vdd_5v0_sys>; /* TF's have no control GPIO */
 	};
 
 	/* Dock's USB port */
@@ -1460,10 +1462,9 @@
 
 	usb-phy@7d008000 {		/* phy3 */
 		status = "okay";
-		nvidia,xcvr-setup-use-fuses;
-		nvidia,xcvr-lsfslew = <2>;
-		nvidia,xcvr-lsrslew = <2>;
-		vbus-supply = <&vdd_5v0_sys>; /* This should be GPIO based fixed reg if any GPIO will be found */
+		/delete-property/ nvidia,xcvr-setup-use-fuses;
+		nvidia,xcvr-setup = <5>;      /* Based on TF201 fuse value - 48 */
+		vbus-supply = <&vdd_5v0_sys>; /* TF's have no control GPIO */
 	};
 
 	backlight_lvds: backlight-lvds {
