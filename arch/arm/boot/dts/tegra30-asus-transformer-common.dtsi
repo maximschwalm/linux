@@ -1592,10 +1592,6 @@
 		status = "okay";
 	};
 
-	tegra-power-domain {
-		core-supply = <&vdd_core>;
-	};
-
 	thermal-zones {
 		skin-thermal {
 			polling-delay-passive = <1000>; /* milliseconds */
