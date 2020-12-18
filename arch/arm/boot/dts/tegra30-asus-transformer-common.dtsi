@@ -1392,8 +1392,8 @@
 		cd-gpios = <&gpio TEGRA_GPIO(I, 5) GPIO_ACTIVE_LOW>;	// sdhci_cd, in, lo [card in]
 		bus-width = <4>;
 
-		vmmc-supply = <&vddio_usd>;	/* ldo3 */
-		vqmmc-supply = <&vdd_usd>;	/* ldo2 */
+		vmmc-supply = <&vdd_usd>;	/* ldo2 */
+		vqmmc-supply = <&vddio_usd>;	/* ldo3 */
 	};
 
 	brcm_wifi_pwrseq: wifi-pwrseq {
