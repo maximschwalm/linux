@@ -24,16 +24,14 @@
 			};
 		};
 
-		hdmi: dc@54240000 { };
-
-		hdmi@54280000 {
+		hdmi: hdmi@54280000 {
 			status = "okay";
 
-			hdmi-supply = <&vdd_5v0_sys>;
+			hdmi-supply = <&hdmi_5v0_sys>;
 			pll-supply = <&vdd_1v8>;
 			vdd-supply = <&vdd_3v3_sys>;
 
-			nvidia,hpd-gpio = <&gpio TEGRA_GPIO(N, 7) GPIO_ACTIVE_HIGH>;	// hdmi_hpd, in, lo
+			nvidia,hpd-gpio = <&gpio TEGRA_GPIO(N, 7) GPIO_ACTIVE_HIGH>;
 			nvidia,ddc-i2c-bus = <&hdmi_ddc>;
 		};
 	};

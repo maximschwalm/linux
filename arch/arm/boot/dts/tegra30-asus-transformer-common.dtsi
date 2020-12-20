@@ -1365,6 +1365,17 @@
 			enable-active-high;
 			vin-supply = <&vdd_3v3_sys>;
 		};
+
+		hdmi_5v0_sys: regulator@5 {
+			compatible = "regulator-fixed";
+			reg = <5>;
+			regulator-name = "hdmi_5v0_sys";
+			regulator-min-microvolt = <5000000>;
+			regulator-max-microvolt = <5000000>;
+			gpio = <&gpio TEGRA_GPIO(P, 2) GPIO_ACTIVE_HIGH>;
+			enable-active-high;
+			vin-supply = <&vdd_5v0_sys>;
+		};
 	};
 
 	pmc@7000e400 {
