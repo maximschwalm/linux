@@ -151,7 +151,7 @@
 	};
 
 	/* internal SDIO WiFi sdmmc3 */
-	sdhci@78000400 {
+	sdmmc3: mmc@78000400 {
 		/* Azurewave AW-NH615 BCM4329 */
 		wifi@1 {
 			compatible = "brcm,bcm4329-fmac";
