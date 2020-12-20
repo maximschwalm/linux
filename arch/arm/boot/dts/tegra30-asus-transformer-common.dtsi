@@ -1001,12 +1001,12 @@
 			clocks = <&tegra_pmc TEGRA_PMC_CLK_BLINK>;
 			clock-names = "txco";
 
-			vbat-supply  = <&vdd_3v3_sys>;
+			vbat-supply  = <&vdd_3v3_com>;
 			vddio-supply = <&vdd_1v8>;
 
-			device-wakeup-gpios = <&gpio TEGRA_GPIO(U, 1) GPIO_ACTIVE_HIGH>;	/* bt_ext_wake, out, lo	*/
-			host-wakeup-gpios =   <&gpio TEGRA_GPIO(U, 6) GPIO_ACTIVE_HIGH>;	/* bt_host_wake, in, lo	*/
-			shutdown-gpios =      <&gpio TEGRA_GPIO(U, 0) GPIO_ACTIVE_HIGH>;	/* bcm43xx_nshutdown_gp, out, lo */
+			device-wakeup-gpios = <&gpio TEGRA_GPIO(U, 1) GPIO_ACTIVE_HIGH>;
+			host-wakeup-gpios =   <&gpio TEGRA_GPIO(U, 6) GPIO_ACTIVE_HIGH>;
+			shutdown-gpios =      <&gpio TEGRA_GPIO(U, 0) GPIO_ACTIVE_HIGH>;
 		};
 	};
 
@@ -1353,6 +1353,18 @@
 			enable-active-high;
 			vin-supply = <&vdd2_reg>;
 		};
+
+		vdd_3v3_com: regulator@4 {
+			compatible = "regulator-fixed";
+			reg = <4>;
+			regulator-name = "vdd_3v3_com";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-always-on;
+			gpio = <&gpio TEGRA_GPIO(D, 0) GPIO_ACTIVE_HIGH>;
+			enable-active-high;
+			vin-supply = <&vdd_3v3_sys>;
+		};
 	};
 
 	pmc@7000e400 {
@@ -1402,8 +1414,8 @@
 		clocks = <&tegra_pmc TEGRA_PMC_CLK_BLINK>;
 		clock-names = "ext_clock";
 
-		reset-gpios = <&gpio TEGRA_GPIO(D, 3) GPIO_ACTIVE_LOW>;	// wlan_rst, out, lo [wifi-off]
-		post-power-on-delay-ms = <300>;
+		reset-gpios = <&gpio TEGRA_GPIO(D, 3) GPIO_ACTIVE_HIGH>;
+		post-power-on-delay-ms = <100>;
 		power-off-delay-us = <300>;
 	};
 
@@ -1412,6 +1424,8 @@
 
 		#address-cells = <1>;
 		#size-cells = <0>;
+
+		power-gpios = <&gpio TEGRA_GPIO(D, 4) GPIO_ACTIVE_HIGH>;
 
 		assigned-clocks = <&tegra_car TEGRA30_CLK_SDMMC3>;
 		assigned-clock-parents = <&tegra_car TEGRA30_CLK_PLL_C>;
@@ -1423,13 +1437,13 @@
 		non-removable;
 
 		mmc-pwrseq = <&brcm_wifi_pwrseq>;
-		vmmc-supply = <&vdd_3v3_sys>;
+		vmmc-supply = <&vdd_3v3_com>;
 		vqmmc-supply = <&vdd_1v8>;
 
 		wifi@1 {
 			reg = <1>;
 			interrupt-parent = <&gpio>;
-			interrupts = <TEGRA_GPIO(O, 4) IRQ_TYPE_LEVEL_HIGH>;	/* bcmsdh_sdmmc, in, lo */
+			interrupts = <TEGRA_GPIO(O, 4) IRQ_TYPE_LEVEL_HIGH>;
 			interrupt-names = "host-wake";
 		};
 	};
