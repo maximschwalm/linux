@@ -140,11 +140,11 @@
 
 	i2c@7000d000 {		/*i2c5*/
 		/* Realtek ALC5631 audio codec */
-		rt5631: rt5631@1a {
+		rt5631: audio-codec@1a {
 			compatible = "realtek,rt5631";
 			reg = <0x1a>;
 
-			realtek,dmic1-data-pin = <1>;
+			realtek,times-of-bclk = <64>;
 		};
 	};
 
@@ -227,15 +227,15 @@
 	sound {
 		compatible = "nvidia,tegra-audio-rt5631-tf201",
 			     "nvidia,tegra-audio-rt5631";
-		nvidia,model = "ASUS Transformer Prime TF201 ALC5631";
+		nvidia,model = "ASUS TF201 RT5631";
 
 		nvidia,audio-routing =
 			"Headphone Jack", "HPOL",
 			"Headphone Jack", "HPOR",
 			"Int Spk", "SPOL",
 			"Int Spk", "SPOR",
-			"MIC1", "Mic Bias1",
-			"Mic Bias1", "Mic Jack",
+			"MIC1", "MIC Bias1",
+			"MIC Bias1", "Mic Jack",
 			"DMIC", "Int Mic";
 
 		nvidia,i2s-controller = <&tegra_i2s1>;
