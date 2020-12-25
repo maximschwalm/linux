@@ -117,19 +117,20 @@
 			reset-gpios = <&gpio TEGRA_GPIO(O, 0) GPIO_ACTIVE_LOW>;
 		};
 
-		gyro@68 {
+		mpu3050@68 {
 			mount-matrix =   "0", "-1",  "0",
 					"-1",  "0",  "0",
 					 "0",  "0", "-1";
 
+			/* External I2C interface */
 			i2c-gate {
-				accel: accel@f {
+				accelerometer@f {
 					mount-matrix =  "-1",  "0",  "0",
 							 "0",  "1",  "0",
 							 "0",  "0", "-1";
 				};
 
-				compass: compass@e {
+				magnetometer@e {
 					mount-matrix =  "-1",  "0",  "0",
 							 "0", "-1",  "0",
 							 "0",  "0", "-1";
