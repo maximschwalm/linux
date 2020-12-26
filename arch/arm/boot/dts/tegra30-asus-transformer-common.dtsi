@@ -1022,8 +1022,10 @@
 		dsp@60 {
 			compatible = "fortemedia,fm34";
 			reg = <0x60>;
+
 			vddc-supply = <&vdd_1v8>;
 			vdda-supply = <&vdd_1v8>;					/* fm34_power_down */
+
 			reset-gpios = <&gpio TEGRA_GPIO(O, 3) GPIO_ACTIVE_LOW>;		/* fm34_reset, out, hi */
 		};
 	};
@@ -1036,9 +1038,11 @@
 		asusec@15 {
 			compatible = "asus,pad-ec", "asus,ec";
 			reg = <0x15>;
+
 			interrupt-parent = <&gpio>;
-			interrupts = <TEGRA_GPIO(S, 2) IRQ_TYPE_LEVEL_LOW>;		/* asuspec_apwake, in, hi */
-			request-gpio = <&gpio TEGRA_GPIO(Q, 1) GPIO_ACTIVE_LOW>;	/* asuspec_request, out, hi */
+			interrupts = <TEGRA_GPIO(S, 2) IRQ_TYPE_LEVEL_LOW>;
+
+			request-gpio = <&gpio TEGRA_GPIO(Q, 1) GPIO_ACTIVE_LOW>;
 			asus,dockram = <&dockram_pec>;
 
 			/* Texas Instruments bq24725 SMBus Charge Controller */
@@ -1062,16 +1066,18 @@
 		#size-cells = <0>;
 
 		interrupts-extended = <&gpio TEGRA_GPIO(U, 4) IRQ_TYPE_EDGE_BOTH>;
-		detect-gpios = <&gpio TEGRA_GPIO(U, 4) GPIO_ACTIVE_LOW>;		/* asusdec_dock_in, in, lo [in-dock] */
+		detect-gpios = <&gpio TEGRA_GPIO(U, 4) GPIO_ACTIVE_LOW>;
 
 		i2c-parent = <&i2c2>;
 
 		asusec@19 {
 			compatible = "asus,dock-ec", "asus,ec";
 			reg = <0x19>;
+
 			interrupt-parent = <&gpio>;
-			interrupts = <TEGRA_GPIO(S, 7) IRQ_TYPE_LEVEL_LOW>;		/* asusdec_input, in, hi */
-			request-gpio = <&gpio TEGRA_GPIO(Q, 6) GPIO_ACTIVE_LOW>;	/* asusdec_request, out, hi */
+			interrupts = <TEGRA_GPIO(S, 7) IRQ_TYPE_LEVEL_LOW>;
+
+			request-gpio = <&gpio TEGRA_GPIO(Q, 6) GPIO_ACTIVE_LOW>;
 			asus,dockram = <&dockram_dec>;
 
 			dock_battery: battery {
@@ -1150,6 +1156,7 @@
 		nct72: temperature-sensor@4c {
 			compatible = "onnn,nct1008";
 			reg = <0x4c>;
+
 			vcc-supply = <&vdd_3v3_sys>;
 			#thermal-sensor-cells = <1>;
 		};
@@ -1407,7 +1414,7 @@
 	sdmmc1: mmc@78000000 {
 		status = "okay";
 
-		cd-gpios = <&gpio TEGRA_GPIO(I, 5) GPIO_ACTIVE_LOW>;	// sdhci_cd, in, lo [card in]
+		cd-gpios = <&gpio TEGRA_GPIO(I, 5) GPIO_ACTIVE_LOW>;
 		bus-width = <4>;
 
 		vmmc-supply = <&vdd_usd>;	/* ldo2 */
@@ -1463,13 +1470,13 @@
 	};
 
 	/* USB via ASUS connector */
-	usb@7d000000 {			/* usb1 */
+	usb@7d000000 {
 		compatible = "nvidia,tegra30-udc";
 		status = "okay";
 		dr_mode = "peripheral";
 	};
 
-	usb-phy@7d000000 {		/* phy1 */
+	usb-phy@7d000000 {
 		status = "okay";
 		dr_mode = "peripheral";
 		nvidia,hssync-start-delay = <0>;
@@ -1477,19 +1484,19 @@
 		nvidia,xcvr-setup = <5>;      /* Based on TF201 fuse value - 48 */
 		nvidia,xcvr-lsfslew = <2>;
 		nvidia,xcvr-lsrslew = <2>;
-		vbus-supply = <&vdd_5v0_sys>; /* TF's have no control GPIO */
+		vbus-supply = <&vdd_5v0_sys>;
 	};
 
 	/* Dock's USB port */
-	usb@7d008000 {			/* usb3 */
+	usb@7d008000 {
 		status = "okay";		
 	};
 
-	usb-phy@7d008000 {		/* phy3 */
+	usb-phy@7d008000 {
 		status = "okay";
 		/delete-property/ nvidia,xcvr-setup-use-fuses;
 		nvidia,xcvr-setup = <5>;      /* Based on TF201 fuse value - 48 */
-		vbus-supply = <&vdd_5v0_sys>; /* TF's have no control GPIO */
+		vbus-supply = <&vdd_5v0_sys>;
 	};
 
 	backlight_lvds: backlight-lvds {
@@ -1511,7 +1518,6 @@
 	/* PMIC has a built-in 32KHz oscillator which is used by PMC */
 	clk32k_in: clock@0 {
 		compatible = "fixed-clock";
-		reg = <0>;
 		#clock-cells = <0>;
 		clock-frequency = <32768>;
 		clock-output-names = "pmic-oscillator";
@@ -1551,7 +1557,7 @@
 
 		power {
 			label = "Power";
-			gpios = <&gpio TEGRA_GPIO(V, 0) GPIO_ACTIVE_LOW>;	/* KEY_POWER, in, hi */
+			gpios = <&gpio TEGRA_GPIO(V, 0) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_POWER>;
 			debounce-interval = <10>;
 			wakeup-event-action = <EV_ACT_ASSERTED>;
@@ -1560,7 +1566,7 @@
 
 		volume-up {
 			label = "Volume Up";
-			gpios = <&gpio TEGRA_GPIO(Q, 2) GPIO_ACTIVE_LOW>;	/* KEY_VOLUMEUP, in, hi */
+			gpios = <&gpio TEGRA_GPIO(Q, 2) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_VOLUMEUP>;
 			debounce-interval = <10>;
 			wakeup-event-action = <EV_ACT_ASSERTED>;
@@ -1569,7 +1575,7 @@
 
 		volume-down {
 			label = "Volume Down";
-			gpios = <&gpio TEGRA_GPIO(Q, 3) GPIO_ACTIVE_LOW>;	/* KEY_VOLUMEDOWN, in, hi */
+			gpios = <&gpio TEGRA_GPIO(Q, 3) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_VOLUMEDOWN>;
 			debounce-interval = <10>;
 			wakeup-event-action = <EV_ACT_ASSERTED>;
@@ -1578,7 +1584,7 @@
 
 		dock-hall-sensor {
 			label = "Lid";
-			gpios = <&gpio TEGRA_GPIO(S, 6) GPIO_ACTIVE_LOW>;	/* asusdec_hall_sensor, in, hi [open] */
+			gpios = <&gpio TEGRA_GPIO(S, 6) GPIO_ACTIVE_LOW>;
 			linux,input-type = <EV_SW>;
 			linux,code = <SW_LID>;
 			debounce-interval = <10>;
@@ -1587,7 +1593,7 @@
 
 		ac-15v {
 			label = "Power adapter 15V";
-			gpios = <&gpio TEGRA_GPIO(H, 5) GPIO_ACTIVE_HIGH>;	/* LIMIT_SET1, in, lo [usb: pc] */
+			gpios = <&gpio TEGRA_GPIO(H, 5) GPIO_ACTIVE_HIGH>;
 			linux,input-type = <EV_SW>;
 			linux,code = <SW_DOCK>;
 			debounce-interval = <10>;
@@ -1596,7 +1602,7 @@
 
 		lineout-detect {
 			label = "Audio dock line-out detect";
-			gpios = <&gpio TEGRA_GPIO(X, 3) GPIO_ACTIVE_LOW>;	/* lineout_int, in, hi */
+			gpios = <&gpio TEGRA_GPIO(X, 3) GPIO_ACTIVE_LOW>;
 			linux,input-type = <EV_SW>;
 			linux,code = <SW_LINEOUT_INSERT>;
 			debounce-interval = <10>;
@@ -1651,28 +1657,3 @@
 		};
 	};
 };
-
-&emc_icc_dvfs_opp_table {
-	/delete-node/ opp@750000000,1300;
-	/delete-node/ opp@800000000,1300;
-	/delete-node/ opp@900000000,1350;
-};
-
-&emc_bw_dfs_opp_table {
-	/delete-node/ opp@750000000;
-	/delete-node/ opp@800000000;
-	/delete-node/ opp@900000000;
-};
-
-/*
-	interrupt-parent = <&gpio>;
-	interrupts = <TEGRA_GPIO(S, 5) IRQ_TYPE_EDGE_BOTH>,	// dock_charging, in, lo
-		     <TEGRA_GPIO(S, 4) IRQ_TYPE_EDGE_BOTH>;	// low_battery_detect, in, lo
-		     <TEGRA_GPIO(N, 4) IRQ_TYPE_EDGE_BOTH>;	// battery_detect, in, lo
-	interrupt-names = "dock-charging", "low", "detect";
-
-	/delete-property/ interrupts;
-	interrupts-extended = <&lic GIC_SPI 53 IRQ_TYPE_LEVEL_HIGH>,
-				<&gpio TEGRA_GPIO(CC, 2) IRQ_TYPE_EDGE_FALLING>;	// temp_alert, in, hi	[LEVEL_LOW]
-	interrupt-names = "irq", "smbus_alert";
-*/

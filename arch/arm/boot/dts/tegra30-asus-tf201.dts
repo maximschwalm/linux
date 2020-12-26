@@ -84,8 +84,8 @@
 			reg = <0x4d>;
 
 			interrupt-parent = <&gpio>;
-			interrupts = <TEGRA_GPIO(H, 4) IRQ_TYPE_EDGE_FALLING>;		/* touch_irq, in, hi */
-			reset-gpios = <&gpio TEGRA_GPIO(H, 6) GPIO_ACTIVE_LOW>;		/* touch_reset, out, hi */
+			interrupts = <TEGRA_GPIO(H, 4) IRQ_TYPE_EDGE_FALLING>;
+			reset-gpios = <&gpio TEGRA_GPIO(H, 6) GPIO_ACTIVE_LOW>;
 
 			vdda-supply = <&vdd_3v3_sys>;
 			vdd-supply  = <&vdd_3v3_sys>;
@@ -107,12 +107,12 @@
 			compatible = "aptina,mi1040";
 			reg = <0x48>;
 
-			clocks = <>; 						// <&tegra_car TEGRA30_CLK_PLL_A>; CAM_MCLK
+			clocks = <>; 	// <&tegra_car TEGRA30_CLK_PLL_A>; CAM_MCLK
 			clock-names = "extclk";
 
 			vddio-suppy = <&vdd_1v8>;
-			vdda-suppy = <&vdd_3v3_sys>;			// 2.85V?
-			vddc-supply = <&cam_vddc>;			// PWR_DN
+			vdda-suppy = <&vdd_3v3_sys>;	// 2.85V?
+			vddc-supply = <&cam_vddc>;	// PWR_DN
 
 			reset-gpios = <&gpio TEGRA_GPIO(O, 0) GPIO_ACTIVE_LOW>;
 		};
