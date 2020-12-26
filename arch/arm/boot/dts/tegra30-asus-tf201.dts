@@ -70,13 +70,6 @@
 		};
 	};
 
-	uartc: serial@70006200 {
-		/* Azurewave AW-NH615 BCM4329B1 */
-		bluetooth {
-			compatible = "brcm,bcm4329-bt";
-		};
-	};
-
 	i2c@7000c400 {		/*i2c2*/
 		/* Atmel MXT768E touchscreen */
 		touchscreen@4d {
@@ -146,14 +139,6 @@
 			reg = <0x1a>;
 
 			realtek,times-of-bclk = <64>;
-		};
-	};
-
-	/* internal SDIO WiFi sdmmc3 */
-	sdmmc3: mmc@78000400 {
-		/* Azurewave AW-NH615 BCM4329 */
-		wifi@1 {
-			compatible = "brcm,bcm4329-fmac";
 		};
 	};
 
