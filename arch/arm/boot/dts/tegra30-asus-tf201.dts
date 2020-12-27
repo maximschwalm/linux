@@ -128,7 +128,6 @@
 							 "0",  "1",  "0",
 							 "0",  "0", "-1";
 				};
-
 			};
 		};
 	};
@@ -145,13 +144,17 @@
 
 	/* HannStar HSD101PWW2 Rev0-A00/A01 LCD SuperIPS+ HD panel */
 	display-panel {
-		compatible = "hannstar,hsd070pww1", "panel-lvds";
+		compatible = "panel-lvds";
 
 		power-supply = <&vdd_pnl>;
 		backlight = <&backlight_lvds>;
 
-		width-mm = <136>;			/* hsd101pww2 panel has same properties as */
-		height-mm = <217>;			/* hsd070pww1, only difference is physical size */
+		/*
+		 * The hsd101pww2 panel has same properties as hsd070pww1,
+		 * only difference is physical size.
+		 */
+		width-mm = <217>;
+		height-mm = <136>;
 
 		data-mapping = "jeida-24";
 
