@@ -88,6 +88,12 @@
 	i2c@7000c500 {		/*i2c3*/
 		clock-frequency = <100000>;
 
+		magnetometer@e {
+			mount-matrix =  "-1",  "0",  "0",
+					 "0", "-1",  "0",
+					 "0",  "0", "-1";
+		};
+
 		/* Rear camera Fujitsu MBG048 image processor */
 		back_camera: camera@1f {
 			compatible = "fujitsu,m6mo";
@@ -110,7 +116,7 @@
 			reset-gpios = <&gpio TEGRA_GPIO(O, 0) GPIO_ACTIVE_LOW>;
 		};
 
-		mpu3050@68 {
+		gyroscope@68 {
 			mount-matrix =   "0", "-1",  "0",
 					"-1",  "0",  "0",
 					 "0",  "0", "-1";
@@ -123,11 +129,6 @@
 							 "0",  "0", "-1";
 				};
 
-				magnetometer@e {
-					mount-matrix =  "-1",  "0",  "0",
-							 "0", "-1",  "0",
-							 "0",  "0", "-1";
-				};
 			};
 		};
 	};
