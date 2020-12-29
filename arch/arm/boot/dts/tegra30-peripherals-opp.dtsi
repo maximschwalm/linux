@@ -199,6 +199,7 @@
 			opp-hz = /bits/ 64 <204000000>;
 			opp-supported-hw = <0x0007>;
 			required-opps = <&core_opp_1000>;
+			opp-suspend;
 		};
 
 		opp@204000000,1250 {
@@ -206,6 +207,7 @@
 			opp-hz = /bits/ 64 <204000000>;
 			opp-supported-hw = <0x0008>;
 			required-opps = <&core_opp_1250>;
+			opp-suspend;
 		};
 
 		opp@333500000,1000 {
@@ -419,6 +421,7 @@
 			opp-hz = /bits/ 64 <204000000>;
 			opp-supported-hw = <0x000F>;
 			opp-peak-kBps = <1632000>;
+			opp-suspend;
 		};
 
 		opp@333500000 {
