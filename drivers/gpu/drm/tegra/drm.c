@@ -322,7 +322,7 @@ int tegra_drm_submit(struct tegra_drm_context *context,
 	job->is_addr_reg = context->client->ops->is_addr_reg;
 	job->is_valid_class = context->client->ops->is_valid_class;
 	job->syncpt_incrs = syncpt.incrs;
-	job->syncpt = sp;
+	job->syncpt = host1x_syncpt_get(sp);
 	job->timeout = 10000;
 
 	if (args->timeout && args->timeout < 10000)
@@ -341,8 +341,7 @@ int tegra_drm_submit(struct tegra_drm_context *context,
 	args->fence = job->syncpt_end;
 
 fail:
-	if (sp)
-		host1x_syncpt_put(sp);
+	host1x_syncpt_put(sp);
 
 	while (num_refs--)
 		drm_gem_object_put(refs[num_refs]);
