@@ -268,6 +268,11 @@ void host1x_intr_put_ref(struct host1x *host, unsigned int id, void *ref)
 	}
 	spin_unlock(&syncpt->intr.lock);
 
+	if (waiter->action == HOST1X_INTR_ACTION_WAKEUP_INTERRUPTIBLE) {
+		while (atomic_read(&waiter->state) == WLS_REMOVED)
+			cpu_relax();
+	}
+
 	kref_put(&waiter->refcount, waiter_release);
 }
 
