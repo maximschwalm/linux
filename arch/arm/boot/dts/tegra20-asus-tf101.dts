@@ -504,7 +504,6 @@
 	};
 
 	i2c2: i2c@7000c400 {	/*i2c2*/
-		clock-frequency = <93750>;
 		status = "okay";
 	};
 
@@ -521,7 +520,22 @@
 		pinctrl-2 = <&state_i2cmux_idle>;
 
 		hdmi_ddc: i2c@0 {
+			clock-frequency = <93750>;
 			reg = <0>;
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			nvhdcp@3a {
+				compatible = "nvidia,hdcp";
+				reg = <0x3a>;
+			};
+		};
+
+		panel_ddc: i2c@1 {
+			clock-frequency = <100000>;
+			reg = <1>;
+
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
@@ -876,6 +890,7 @@
 	display-panel {
 		compatible = "panel-lvds";
 
+		ddc-i2c-bus = <&panel_ddc>;
 		power-supply = <&vdd_pnl>;
 		backlight = <&backlight>;
 
