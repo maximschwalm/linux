@@ -887,6 +887,7 @@
 		};
 	};
 
+	/* LG LP101WX1-SLN2 LCD IPS HD panel */
 	display-panel {
 		compatible = "panel-lvds";
 
@@ -894,8 +895,8 @@
 		power-supply = <&vdd_pnl>;
 		backlight = <&backlight>;
 
-		width-mm = <218>; 	// needs configuration
-		height-mm = <135>; 	// needs configuration
+		width-mm = <217>;
+		height-mm = <136>;
 
 		data-mapping = "jeida-18";
 
