@@ -23,6 +23,26 @@
 				};
 			};
 		};
+
+		vi@54080000 {
+			reg-names = "regs";
+			power-gpio = <&gpio TEGRA_GPIO(BB, 7) GPIO_ACTIVE_LOW>;
+			vcsi-supply = <&vdac_vdd_reg>;
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@1 {
+					reg = <2>;
+					vi_2: endpoint@1 {
+						remote-endpoint = <&camera_ov2710>;
+						data-lanes = <0>;
+						bus-width = <8>;
+					};
+				};
+			};
+		};
 	};
 
 	pinmux@70000868 {
@@ -118,6 +138,14 @@
 			DOVDD-supply = <&vddio_1v8_cam>;
 			DVDD-supply = <&vdd_2v85_cam2>;
 			// AVDD-supply = <&cam_vddc>;		/* Analog regulator line should be here */
+
+			port {
+				camera_ov2710: endpoint {
+					remote-endpoint = <&vi_2>;
+					clock-lanes = <0>;
+					data-lanes = <1>;
+				};
+			};
 		};
 
 		gyroscope@68 {
