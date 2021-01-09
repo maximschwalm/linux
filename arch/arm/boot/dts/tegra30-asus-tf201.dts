@@ -102,18 +102,19 @@
 			reset-gpios = <&gpio TEGRA_GPIO(BB, 0) GPIO_ACTIVE_LOW>; 	// cam_sensor_rst_lo, out, lo
 		};
 
-		front_camera: camera@48 {
-			compatible = "aptina,mi1040";
+		/* Front camera Aptina MI1040 image processor */
+		front_camera: camera-sensor@48 {
+			compatible = "ovti,ov2710";
 			reg = <0x48>;
 
-			clocks = <>; 	// <&tegra_car TEGRA30_CLK_PLL_A>; CAM_MCLK
+			clocks = <&tegra_car TEGRA30_CLK_PLL_A>;
 			clock-names = "extclk";
 
-			vddio-suppy = <&vdd_1v8>;
-			vdda-suppy = <&vdd_3v3_sys>;	// 2.85V?
-			vddc-supply = <&cam_vddc>;	// PWR_DN
-
 			reset-gpios = <&gpio TEGRA_GPIO(O, 0) GPIO_ACTIVE_LOW>;
+
+			DOVDD-supply = <&vddio_1v8_cam>;
+			DVDD-supply = <&vdd_2v85_cam2>;
+			// AVDD-supply = <&cam_vddc>;		/* Analog regulator line should be here */
 		};
 
 		gyroscope@68 {
@@ -124,9 +125,9 @@
 			/* External I2C interface */
 			i2c-gate {
 				accelerometer@f {
-					mount-matrix =  "-1",  "0",  "0",
-							 "0",  "1",  "0",
-							 "0",  "0", "-1";
+					mount-matrix =   "1",  "0",  "0",
+							 "0", "-1",  "0",
+							 "0",  "0",  "1";
 				};
 			};
 		};
@@ -142,6 +143,16 @@
 		};
 	};
 
+	usb-phy@7d000000 {
+		/delete-property/ nvidia,xcvr-setup-use-fuses;
+		nvidia,xcvr-setup = <5>;      /* Based on TF201 fuse value - 48 */
+	};
+
+	usb-phy@7d008000 {
+		/delete-property/ nvidia,xcvr-setup-use-fuses;
+		nvidia,xcvr-setup = <5>;      /* Based on TF201 fuse value - 48 */
+	};
+
 	/* HannStar HSD101PWW2 Rev0-A00/A01 LCD SuperIPS+ HD panel */
 	display-panel {
 		compatible = "panel-lvds";
@@ -149,10 +160,6 @@
 		power-supply = <&vdd_pnl>;
 		backlight = <&backlight_lvds>;
 
-		/*
-		 * The hsd101pww2 panel has same properties as hsd070pww1,
-		 * only difference is physical size.
-		 */
 		width-mm = <217>;
 		height-mm = <136>;
 
@@ -179,7 +186,6 @@
 	};
 
 	/* Texas Instruments SN75LVDS83B LVDS Transmitter */
-	/* NOTE: datasheet also mentions about THine TH133B LVDS Transmitter */
 	lvds-encoder {
 		compatible = "ti,sn75lvds83", "lvds-encoder";
 
