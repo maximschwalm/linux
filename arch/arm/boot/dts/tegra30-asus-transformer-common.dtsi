@@ -67,6 +67,20 @@
 	};
 
 	gpio@6000d000 {
+		init-lpm-in-hog {
+			gpio-hog;
+			gpios = <TEGRA_GPIO(I, 6) GPIO_ACTIVE_HIGH>,
+				<TEGRA_GPIO(B, 1) GPIO_ACTIVE_HIGH>;
+			input;
+		};
+
+		init-lpm-out-hog {
+			gpio-hog;
+			gpios = <TEGRA_GPIO(K, 7) GPIO_ACTIVE_HIGH>,
+				<TEGRA_GPIO(R, 0) GPIO_ACTIVE_HIGH>;
+			output-low;
+		};
+
 		usb_charge_limit-hog {
 			gpio-hog;
 			gpios = <TEGRA_GPIO(R, 1) GPIO_ACTIVE_LOW>;	// LIMIT_SET0, out, lo; @tegra_udc.LIMIT_PWR [0 = 0.5A, 1 = 1A]
