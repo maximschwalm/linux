@@ -26,6 +26,7 @@
 		display0 = &lcd;
 		display1 = &hdmi;
 
+		serial0 = &uartd;
 		serial1 = &uartc; /* Bluetooth */
 		serial2 = &uartb; /* GPS */
 	};
@@ -411,6 +412,10 @@
 		};
 	};
 
+	serial@70006300 {
+		status = "okay";
+	};
+
 	pwm: pwm@7000a000 {
 		status = "okay";
 	};
@@ -532,7 +537,7 @@
 			};
 		};
 
-		panel_ddc: i2c@1 {
+		lvds_ddc: i2c@1 {
 			clock-frequency = <100000>;
 			reg = <1>;
 
@@ -649,11 +654,7 @@
 					regulator-always-on;
 				};
 
-				ldo0 {
-					regulator-name = "vdd_ldo0,p_cam_avdd";
-					regulator-min-microvolt = <1250000>;
-					regulator-max-microvolt = <3300000>;
-				};
+				/* LDO0 is not connected to anything */
 
 				ldo1 {
 					regulator-name = "vdd_ldo1,avdd_pll*";
@@ -823,6 +824,7 @@
 		bus-width = <4>;
 
 		cd-gpios = <&gpio TEGRA_GPIO(I, 5) GPIO_ACTIVE_LOW>;
+		wp-gpios = <&gpio TEGRA_GPIO(H, 1) GPIO_ACTIVE_HIGH>;
 		power-gpios = <&gpio TEGRA_GPIO(T, 3) GPIO_ACTIVE_HIGH>;
 
 		vmmc-supply = <&vdd_3v3_sys>;
@@ -891,7 +893,7 @@
 	display-panel {
 		compatible = "panel-lvds";
 
-		ddc-i2c-bus = <&panel_ddc>;
+		ddc-i2c-bus = <&lvds_ddc>;
 		power-supply = <&vdd_pnl>;
 		backlight = <&backlight>;
 
