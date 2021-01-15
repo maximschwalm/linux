@@ -2,6 +2,7 @@
 /dts-v1/;
 
 /* This dts file describes the Asus Transformer TF101 tablet */
+/* Tegra SKU: 8, Speedo ID: 1, CPU Process: 1, Core Process: 2 */
 
 #include <dt-bindings/input/gpio-keys.h>
 #include <dt-bindings/input/input.h>
@@ -562,6 +563,7 @@
 			DCVDD-supply = <&vdd_1v8_sys>;
 		};
 
+		/* Atmel mXT1386 touchscreen */
 		touchscreen@5a {
 			compatible = "atmel,maxtouch";
 			reg = <0x5a>;
@@ -651,7 +653,7 @@
 		clock-frequency = <400000>;
 		status = "okay";
 
-		/* Dynaimage ambient light sensor */
+		/* Dynaimage al3000a ambient light sensor */
 		light-sensor@1c {
 			compatible = "dynaimage,al3010";
 			reg = <0x1c>;
