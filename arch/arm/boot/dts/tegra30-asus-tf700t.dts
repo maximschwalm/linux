@@ -105,8 +105,8 @@
 			vcc33-supply = <&vdd_3v3_sys>;
 			vccio-supply = <&vdd_3v3_sys>;
 
-			touchscreen-size-x = <2944>;
-			touchscreen-size-y = <1856>;
+			touchscreen-size-x = <2240>;
+			touchscreen-size-y = <1408>;
 			touchscreen-inverted-y;
 		};
 	};
