@@ -35,6 +35,7 @@
 
 struct tegra_rt5631 {
 	struct tegra_asoc_utils_data util_data;
+	int gpio_hp_mute;
 	int gpio_hp_det;
 	enum of_gpio_flags gpio_hp_det_flags;
 };
@@ -101,9 +102,25 @@ static struct snd_soc_jack_gpio tegra_rt5631_hp_jack_gpio = {
 	.invert = 1,
 };
 
+static int tegra_rt5631_event_hp(struct snd_soc_dapm_widget *w,
+					struct snd_kcontrol *k, int event)
+{
+	struct snd_soc_dapm_context *dapm = w->dapm;
+	struct snd_soc_card *card = dapm->card;
+	struct tegra_rt5631 *machine = snd_soc_card_get_drvdata(card);
+
+	if (!gpio_is_valid(machine->gpio_hp_mute))
+		return 0;
+
+	gpio_set_value_cansleep(machine->gpio_hp_mute,
+				!SND_SOC_DAPM_EVENT_ON(event));
+
+	return 0;
+}
+
 static const struct snd_soc_dapm_widget tegra_rt5631_dapm_widgets[] = {
 	SND_SOC_DAPM_SPK("Int Spk", NULL),
-	SND_SOC_DAPM_HP("Headphone Jack", NULL),
+	SND_SOC_DAPM_HP("Headphone Jack", tegra_rt5631_event_hp),
 	SND_SOC_DAPM_MIC("Mic Jack", NULL),
 	SND_SOC_DAPM_MIC("Int Mic", NULL),
 };
@@ -176,8 +193,20 @@ static int tegra_rt5631_probe(struct platform_device *pdev)
 	card->dev = &pdev->dev;
 	snd_soc_card_set_drvdata(card, machine);
 
-	machine->gpio_hp_det = of_get_named_gpio_flags(
-		np, "nvidia,hp-det-gpios", 0, &machine->gpio_hp_det_flags);
+	machine->gpio_hp_mute = of_get_named_gpio(np, "nvidia,hp-mute-gpios", 0);
+	if (machine->gpio_hp_mute == -EPROBE_DEFER)
+		return -EPROBE_DEFER;
+	if (gpio_is_valid(machine->gpio_hp_mute)) {
+		ret = devm_gpio_request_one(&pdev->dev, machine->gpio_hp_mute,
+					    GPIOF_OUT_INIT_HIGH, "hp_mute");
+		if (ret) {
+			dev_err(card->dev, "cannot get hp_mute gpio\n");
+			return ret;
+		}
+	}
+
+	machine->gpio_hp_det = of_get_named_gpio_flags(np, "nvidia,hp-det-gpios",
+		0, &machine->gpio_hp_det_flags);
 	if (machine->gpio_hp_det == -EPROBE_DEFER)
 		return -EPROBE_DEFER;
 
