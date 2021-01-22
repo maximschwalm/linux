@@ -1,0 +1,62 @@
+NVIDIA Tegra audio complex, with RT5631 CODEC
+
+Required properties:
+- compatible : "nvidia,tegra-audio-rt5631" or "nvidia,tegra-audio-alc5631"
+- clocks : Must contain an entry for each entry in clock-names.
+  See ../clocks/clock-bindings.txt for details.
+- clock-names : Must include the following entries:
+  - pll_a
+  - pll_a_out0
+  - mclk (The Tegra cdev1/extern1 clock, which feeds the CODEC's mclk)
+- nvidia,model : The user-visible name of this sound complex.
+- nvidia,audio-routing : A list of the connections between audio components.
+  Each entry is a pair of strings, the first being the connection's sink,
+  the second being the connection's source. Valid names for sources and
+  sinks are the RT5631's pins (as documented in its binding), and the jacks
+  on the board:
+
+  * Int Spk
+  * Headphone Jack
+  * Mic Jack
+  * Int Mic
+
+- nvidia,i2s-controller : The phandle of the Tegra I2S1 controller
+- nvidia,audio-codec : The phandle of the RT5631 audio codec
+
+Optional properties:
+- nvidia,hp-mute-gpios : The GPIO that mutes the headphones (button event)
+- nvidia,hp-det-gpios : The GPIO that detect headphones are plugged in
+
+Example:
+
+sound {
+	compatible = "nvidia,tegra-audio-rt5631-transformer",
+		     "nvidia,tegra-audio-rt5631";
+	nvidia,model = "NVIDIA Tegra Transformer";
+
+	nvidia,audio-routing =
+		"Headphone Jack", "HPOL",
+		"Headphone Jack", "HPOR",
+		"Int Spk", "SPOL",
+		"Int Spk", "SPOR",
+		"MIC1", "MIC Bias1",
+		"MIC Bias1", "Mic Jack",
+		"DMIC", "Int Mic";
+
+	nvidia,i2s-controller = <&tegra_i2s1>;
+	nvidia,audio-codec = <&rt5631>;
+
+	nvidia,hp-det-gpios = <&gpio TEGRA_GPIO(W, 2) GPIO_ACTIVE_LOW>;
+	nvidia,hp-mute-gpios = <&gpio TEGRA_GPIO(X, 2) GPIO_ACTIVE_LOW>;
+
+	clocks = <&tegra_car TEGRA30_CLK_PLL_A>,
+		 <&tegra_car TEGRA30_CLK_PLL_A_OUT0>,
+		 <&tegra_pmc TEGRA_PMC_CLK_OUT_1>;
+	clock-names = "pll_a", "pll_a_out0", "mclk";
+
+	assigned-clocks = <&tegra_car TEGRA30_CLK_EXTERN1>,
+			  <&tegra_pmc TEGRA_PMC_CLK_OUT_1>;
+
+	assigned-clock-parents = <&tegra_car TEGRA30_CLK_PLL_A_OUT0>,
+				 <&tegra_car TEGRA30_CLK_EXTERN1>;
+};
