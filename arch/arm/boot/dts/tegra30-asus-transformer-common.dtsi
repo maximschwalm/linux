@@ -1149,6 +1149,9 @@
 
 					interrupt-parent = <&gpio>;
 					interrupts = <TEGRA_GPIO(O, 5) IRQ_TYPE_EDGE_RISING>;
+
+					vdd-supply = <&vdd_3v3_sys>;
+					vddio-supply = <&vdd_1v8>;
 				};
 			};
 		};
