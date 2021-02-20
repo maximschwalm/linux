@@ -2652,6 +2652,15 @@ static int tegra_dc_init(struct host1x_client *client)
 	drm_crtc_helper_add(&dc->base, &tegra_crtc_helper_funcs);
 
 	/*
+	 * Temporal hack for Asus TF700T
+	 */
+	if (of_machine_is_compatible("asus,tf700t")) {
+		u32 color_control = BASE_COLOR_SIZE888;
+		color_control |= DITHER_CONTROL_ORDERED;
+		tegra_dc_writel(dc, color_control, DC_DISP_DISP_COLOR_CONTROL);
+	}
+
+	/*
 	 * Keep track of the minimum pitch alignment across all display
 	 * controllers.
 	 */
