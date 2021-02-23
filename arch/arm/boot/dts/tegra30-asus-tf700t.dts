@@ -124,24 +124,6 @@
 					};
 				};
 			};
-
-			/*
-			 * Panasonic VVX10F004B00 or HYDIS HV101WU1-1E1 LCD
-			 * SuperIPS+ Full HD panel.
-			 */
-			display-panel@1 {
-				compatible = "panasonic,vvx10f004b00";
-				reg = <1>;
-
-				power-supply = <&vdd_core>;
-				backlight = <&backlight_lvds>;
-
-				port {
-					panel_input: endpoint {
-						remote-endpoint = <&bridge_output>;
-					};
-				};
-			};
 		};
 	};
 
@@ -195,6 +177,45 @@
 		rt5631: audio-codec@1a {
 			compatible = "realtek,rt5631";
 			reg = <0x1a>;
+		};
+	};
+
+	/*
+	 * Panasonic VVX10F004B00 or HYDIS HV101WU1-1E1 LCD
+	 * SuperIPS+ Full HD panel.
+	 */
+	display-panel {
+		compatible = "panel-dpi";
+
+		power-supply = <&vdd_pnl>;
+		backlight = <&backlight_lvds>;
+
+		width-mm = <217>;
+		height-mm = <136>;
+
+		panel-timing {
+			/* 1920x1200@60Hz */
+			clock-frequency = <154000000>;
+			hactive = <1920>;
+			vactive = <1200>;
+
+			hfront-porch = <48>;
+			hback-porch = <80>;
+			hsync-len = <32>;
+			vsync-len = <6>;
+			vfront-porch = <3>;
+			vback-porch = <26>;
+
+			hsync-active = <0>;
+			vsync-active = <0>;
+			de-active = <1>;
+			pixelclk-active = <0>;
+		};
+
+		port {
+			panel_input: endpoint {
+				remote-endpoint = <&bridge_output>;
+			};
 		};
 	};
 
