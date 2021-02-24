@@ -120,6 +120,17 @@ static void tegra_rgb_encoder_enable(struct drm_encoder *encoder)
 	value = tegra_dc_readl(rgb->dc, DC_COM_PIN_OUTPUT_POLARITY(1));
 	value &= ~LVS_OUTPUT_POLARITY_LOW;
 	value &= ~LHS_OUTPUT_POLARITY_LOW;
+
+	/*
+	 * Temporal hack for TF700T
+	 *
+	 * Pins H_SYNC, V_SYNC, PIXEL_CLOCK are low polarity,
+	 * set this in the registers to make the panel working.
+	 */
+	if (of_machine_is_compatible("asus,tf700t")) {
+		value = 0x51000000;
+	}
+
 	tegra_dc_writel(rgb->dc, value, DC_COM_PIN_OUTPUT_POLARITY(1));
 
 	/* XXX: parameterize? */
