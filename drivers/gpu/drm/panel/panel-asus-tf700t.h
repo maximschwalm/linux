@@ -1,0 +1,91 @@
+#ifndef _ASUS_WUXGA_H_
+#define _ASUS_WUXGA_H_
+
+typedef enum {
+	WUXGA_TYPE_HYDIS,
+	WUXGA_TYPE_PANASONIC,
+	WUXGA_TYPE_MAX,
+} wuxga_type;
+
+struct wuxga_register_set {
+	uint16_t addr;
+	uint16_t data;
+};
+
+/* special number to indicate this is wait time require */
+#define DISPLAY_WAIT_MS 0 
+
+static const struct wuxga_register_set display_table[] = {
+		{0x0002, 0x0001}, //SYSctl, S/W Reset
+		{DISPLAY_WAIT_MS, 0x05},
+		{0x0002, 0x0000}, //SYSctl, S/W Reset release
+		{0x0016, 0x309F}, //PLL Control Register 0 (PLL_PRD,PLL_FBD)
+		{0x0018, 0x0203}, //PLL_FRS,PLL_LBWS, PLL oscillation enable
+		{DISPLAY_WAIT_MS, 0x05},
+		{0x0018, 0x0213}, //PLL_FRS,PLL_LBWS, PLL clock out enable
+		{0x0006, 0x012C}, //FIFO Control Register
+		{0x0008, 0x0037}, //DSI-TX Format setting
+		{0x0050, 0x003E}, //DSI-TX Pixel stream packet Data Type setting
+		{0x0140, 0x0000}, //D-PHY Clock lane enable
+		{0x0142, 0x0000},
+		{0x0144, 0x0000}, //D-PHY Data lane0 enable
+		{0x0146, 0x0000},
+		{0x0148, 0x0000}, //D-PHY Data lane1 enable
+		{0x014A, 0x0000},
+		{0x014C, 0x0000}, //D-PHY Data lane2 enable
+		{0x014E, 0x0000},
+		{0x0150, 0x0000}, //D-PHY Data lane3 enable
+		{0x0152, 0x0000},
+		{0x0100, 0x0203},
+		{0x0102, 0x0000},
+		{0x0104, 0x0203},
+		{0x0106, 0x0000},
+		{0x0108, 0x0203},
+		{0x010A, 0x0000},
+		{0x010C, 0x0203},
+		{0x010E, 0x0000},
+		{0x0110, 0x0203},
+		{0x0112, 0x0000},
+		{0x0210, 0x1964}, //LINEINITCNT
+		{0x0212, 0x0000},
+		{0x0214, 0x0005}, //LPTXTIMECNT
+		{0x0216, 0x0000},
+		{0x0218, 0x2801}, //TCLK_HEADERCNT
+		{0x021A, 0x0000},
+		{0x021C, 0x0000}, //TCLK_TRAILCNT
+		{0x021E, 0x0000},
+		{0x0220, 0x0C06}, //THS_HEADERCNT
+		{0x0222, 0x0000},
+		{0x0224, 0x4E20}, //TWAKEUPCNT
+		{0x0226, 0x0000},
+		{0x0228, 0x000B}, //TCLK_POSTCNT
+		{0x022A, 0x0000},
+		{0x022C, 0x0005}, //THS_TRAILCNT
+		{0x022E, 0x0000},
+		{0x0230, 0x0005}, //HSTXVREGCNT
+		{0x0232, 0x0000},
+		{0x0234, 0x001F}, //HSTXVREGEN enable
+		{0x0236, 0x0000},
+		{0x0238, 0x0001}, //DSI clock Enable/Disable during LP
+		{0x023A, 0x0000},
+		{0x023C, 0x0005}, //BTACNTRL1
+		{0x023E, 0x0005}, //Lucien something wrong
+		{0x0204, 0x0001}, //STARTCNTRL
+		{0x0206, 0x0000},
+		{0x0620, 0x0001}, //Sync Pulse/Sync Event mode setting
+		{0x0622, 0x0020}, //V Control Register1
+		{0x0624, 0x001A}, //V Control Register2
+		{0x0626, 0x04B0}, //V Control Register3
+		{0x0628, 0x015E}, //H Control Register1
+		{0x062A, 0x00FA}, //H Control Register2
+		{0x062C, 0x1680}, //H Control Register3
+		{0x0518, 0x0001}, //DSI Start
+		{0x051A, 0x0000},
+		{0x0500, 0x0086}, //DSI lane setting, DSI mode=HS
+		{0x0502, 0xA300}, //bit set
+		{0x0500, 0x8000}, //Switch to DSI mode
+		{0x0502, 0xC300},
+		{0x0004, 0x0044}, //Configuration Control Register
+};
+
+#endif  /* _ASUS_WUXGA_H_ */
