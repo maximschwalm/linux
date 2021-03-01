@@ -22,8 +22,8 @@
 				status = "okay";
 
 				port@0 {
-					dpi_output: endpoint {
-						remote-endpoint = <&bridge_input>;
+					lcd_output: endpoint {
+						remote-endpoint = <&lvds_encoder_input>;
 						bus-width = <24>;
 					};
 				};
@@ -87,40 +87,27 @@
 	};
 
 	i2c@7000c000 {		/*i2c1*/
-		dsi-bridge@7 {
-			compatible = "toshiba,tc358768";
-			reg = <0x7>;
+		display-panel@7 {
+			compatible = "asus,tf700t-panel";
+			reg = <0x07>;
 
-			#address-cells = <1>;
-			#size-cells = <0>;
+			osc-gate-gpio = <&gpio TEGRA_GPIO(D, 2) GPIO_ACTIVE_HIGH>;
+			i2c-switch-gpio = <&gpio TEGRA_GPIO(X, 0) GPIO_ACTIVE_HIGH>;
+			mipi-1v8-gpio = <&gpio TEGRA_GPIO(C, 6) GPIO_ACTIVE_HIGH>;
+			mipi-1v2-gpio = <&gpio TEGRA_GPIO(BB, 3) GPIO_ACTIVE_HIGH>;
+			ldo-en-gpio = <&gpio TEGRA_GPIO(U, 5) GPIO_TRANSITORY>;
+			en-vdd-bl-gpio = <&gpio TEGRA_GPIO(H, 3) GPIO_TRANSITORY>;
+			panel-type-gpio = <&gpio TEGRA_GPIO(I, 6) GPIO_TRANSITORY>;
 
-			clocks = <&tc358768_refclk>;
-			clock-names = "refclk";
-
-			reset-gpios = <&gpio TEGRA_GPIO(X, 0) GPIO_ACTIVE_LOW>; /* I2C Switch */
-
-			vddc-supply = <&mipi_1v2_vdd>;
-			vddio-supply = <&mipi_1v8_vio>;
-			vddmipi-supply = <&mipi_1v2_vdd>;
+			power-supply = <&vdd_pnl>;
+			backlight = <&backlight_lvds>;
 
 			ports {
-				#address-cells = <1>;
-				#size-cells = <0>;
 
 				port@0 {
-					reg = <0>;
-
-					bridge_input: endpoint {
-						remote-endpoint = <&dpi_output>;
+					panel_input: endpoint {
+						remote-endpoint = <&lvds_encoder_output>;
 						data-lines = <24>;
-					};
-				};
-
-				port@1 {
-					reg = <1>;
-
-					bridge_output: endpoint {
-						remote-endpoint = <&panel_input>;
 					};
 				};
 			};
@@ -180,80 +167,33 @@
 		};
 	};
 
-	/*
-	 * Panasonic VVX10F004B00 or HYDIS HV101WU1-1E1 LCD
-	 * SuperIPS+ Full HD panel.
-	 */
-	display-panel {
-		compatible = "panel-dpi";
+    /* Texas Instruments SN75LVDS83B LVDS Transmitter */
+	lvds-encoder {
+		compatible = "ti,sn75lvds83", "lvds-encoder";
 
-		power-supply = <&vdd_pnl>;
-		backlight = <&backlight_lvds>;
+		powerdown-gpios = <&gpio TEGRA_GPIO(N, 6) GPIO_ACTIVE_LOW>;
+		power-supply = <&vdd_3v3_sys>;
 
-		width-mm = <217>;
-		height-mm = <136>;
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
 
-		panel-timing {
-			/* 1920x1200@60Hz */
-			clock-frequency = <154000000>;
-			hactive = <1920>;
-			vactive = <1200>;
+			port@0 {
+				reg = <0>;
 
-			hfront-porch = <48>;
-			hback-porch = <80>;
-			hsync-len = <32>;
-			vsync-len = <6>;
-			vfront-porch = <3>;
-			vback-porch = <26>;
+				lvds_encoder_input: endpoint {
+					remote-endpoint = <&lcd_output>;
+				};
+			};
 
-			hsync-active = <0>;
-			vsync-active = <0>;
-			de-active = <1>;
-			pixelclk-active = <0>;
-		};
+			port@1 {
+				reg = <1>;
 
-		port {
-			panel_input: endpoint {
-				remote-endpoint = <&bridge_output>;
+				lvds_encoder_output: endpoint {
+					remote-endpoint = <&panel_input>;
+				};
 			};
 		};
-	};
-
-	mipi_1v2_vdd: regulator@7 {
-		compatible = "regulator-fixed";
-		regulator-name = "mipi_1v2_vdd";
-		regulator-min-microvolt = <1200000>;
-		regulator-max-microvolt = <1200000>;
-		regulator-always-on;
-		regulator-boot-on;
-		gpio = <&gpio TEGRA_GPIO(BB, 3) GPIO_ACTIVE_HIGH>; /* 1.2V */
-		enable-active-high;
-		vin-supply = <&vdd_3v3_sys>;
-	};
-
-	mipi_1v8_vio: regulator@8 {
-		compatible = "regulator-fixed";
-		regulator-name = "mipi_1v8_vio";
-		regulator-min-microvolt = <1800000>;
-		regulator-max-microvolt = <1800000>;
-		regulator-always-on;
-		regulator-boot-on;
-		gpio = <&gpio TEGRA_GPIO(C, 6) GPIO_ACTIVE_HIGH>; /* 1.8V */
-		enable-active-high;
-		vin-supply = <&vdd_1v8>;
-	};
-
-	tc358768_refclk: tc358768-osc-gate {
-		compatible = "gpio-gate-clock";
-		enable-gpios = <&gpio TEGRA_GPIO(D, 2) GPIO_ACTIVE_HIGH>;
-		clocks = <&tc358768_osc>;
-		#clock-cells = <0>;
-	};
-
-	tc358768_osc: tc358768-refclk {
-		compatible = "fixed-clock";
-		clock-frequency = <3850000>;
-		#clock-cells = <0>;
 	};
 
 	vibrator {
