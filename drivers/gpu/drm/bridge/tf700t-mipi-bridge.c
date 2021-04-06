@@ -109,7 +109,8 @@ static const struct bridge_register_set display_table[] = {
 	/* Host: RGB(DPI) input start */
 	{0x0008, 0x0037}, // DSI-TX Format setting
 	{0x0050, 0x003E}, // DSI-TX Pixel Stream packet Data Type setting
-	{0x0004, 0x0044}, // Configuration Control Register
+	{0x0032, 0x0001}, // HSYNC polarity
+	{0x0004, 0x0064}, // Configuration Control Register
 };
 
 struct bridge_data {
