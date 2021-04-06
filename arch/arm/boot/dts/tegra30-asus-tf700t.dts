@@ -22,8 +22,8 @@
 				status = "okay";
 
 				port@0 {
-					dpi_output: endpoint {
-						remote-endpoint = <&bridge_input>;
+					lcd_output: endpoint {
+						remote-endpoint = <&lvds_encoder_input>;
 						bus-width = <24>;
 					};
 				};
@@ -87,22 +87,16 @@
 	};
 
 	i2c@7000c000 {		/*i2c1*/
-		dsi-bridge@7 {
-			compatible = "toshiba,tc358768";
+		mipi-bridge@7 {
+			compatible = "tf700t,mipi-bridge";
 			reg = <0x7>;
 
-			#address-cells = <1>;
-			#size-cells = <0>;
+			ldo-gpios = <&gpio TEGRA_GPIO(U, 5) GPIO_ACTIVE_HIGH>;
+			power-gpios = <&gpio TEGRA_GPIO(X, 0) GPIO_ACTIVE_HIGH>; /* I2C Switch */
+			lvds-gpios = <&gpio TEGRA_GPIO(N, 6) GPIO_ACTIVE_HIGH>;
 
-			clocks = <&tc358768_refclk>;
-			clock-names = "refclk";
-
-			/* I2C Switch */
-			reset-gpios = <&gpio TEGRA_GPIO(X, 0) GPIO_ACTIVE_LOW>;
-
-			vddc-supply = <&mipi_1v2_vdd>;
+			vdd-supply = <&mipi_1v2_vdd>;
 			vddio-supply = <&mipi_1v8_vio>;
-			vddmipi-supply = <&mipi_1v2_vdd>;
 
 			ports {
 				#address-cells = <1>;
@@ -111,35 +105,16 @@
 				port@0 {
 					reg = <0>;
 
-					bridge_input: endpoint {
-						remote-endpoint = <&dpi_output>;
-						data-lines = <24>;
+					lvds_encoder_input: endpoint {
+						remote-endpoint = <&lcd_output>;
 					};
 				};
 
 				port@1 {
 					reg = <1>;
 
-					bridge_output: endpoint {
+					lvds_encoder_output: endpoint {
 						remote-endpoint = <&panel_input>;
-					};
-				};
-			};
-
-			/*
-			 * Panasonic VVX10F004B00 or HYDIS HV101WU1-1E1 LCD
-			 * SuperIPS+ Full HD panel.
-			 */
-			display-panel@1 {
-				compatible = "panasonic,vvx10f004b00";
-				reg = <1>;
-
-				enable-gpios = <&gpio TEGRA_GPIO(U, 5) GPIO_ACTIVE_HIGH>;
-				backlight = <&backlight_lvds>;
-
-				port {
-					panel_input: endpoint {
-						remote-endpoint = <&bridge_output>;
 					};
 				};
 			};
@@ -221,17 +196,45 @@
 		vin-supply = <&vdd_1v8>;
 	};
 
-	tc358768_refclk: tc358768-osc-gate {
-		compatible = "gpio-gate-clock";
-		enable-gpios = <&gpio TEGRA_GPIO(D, 2) GPIO_ACTIVE_HIGH>;
-		clocks = <&tc358768_osc>;
-		#clock-cells = <0>;
-	};
+	/* Panasonic VVX10F004B00 or HYDIS HV101WU1-1E1 LCD SuperIPS+ Full HD panel */
+	display-panel {
+		compatible = "panel-lvds";
 
-	tc358768_osc: tc358768-refclk {
-		compatible = "fixed-clock";
-		clock-frequency = <3850000>;
-		#clock-cells = <0>;
+		power-supply = <&vdd_pnl>;
+		backlight = <&backlight_lvds>;
+
+		width-mm = <217>;
+		height-mm = <136>;
+
+		data-mapping = "jeida-24";
+
+		enable-gpios = <&gpio TEGRA_GPIO(D, 2) GPIO_ACTIVE_HIGH>; /* OSC */
+
+		panel-timing {
+			/* 1920x1200@60Hz */
+			clock-frequency = <154000000>;
+			hactive = <1920>;
+			vactive = <1200>;
+
+			hfront-porch = <48>;
+			hback-porch = <80>;
+			hsync-len = <32>;
+
+			vfront-porch = <3>;
+			vback-porch = <26>;
+			vsync-len = <6>;
+
+			hsync-active = <0>;
+			vsync-active = <0>;
+			de-active = <1>;
+			pixelclk-active = <0>;
+		};
+
+		port {
+			panel_input: endpoint {
+				remote-endpoint = <&lvds_encoder_output>;
+			};
+		};
 	};
 
 	vibrator {
