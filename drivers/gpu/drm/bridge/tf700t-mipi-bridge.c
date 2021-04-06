@@ -23,38 +23,44 @@ struct bridge_register_set {
 };
 
 static const struct bridge_register_set display_table[] = {
+    /* Software Reset */
 	{0x0002, 0x0001}, // SYSctl, S/W Reset
 	{0x0000, 0x0005}, // Delay time
 	{0x0002, 0x0000}, // SYSctl, S/W Reset release
+
+	/* PLL, Clock Setting */
 	{0x0016, 0x309F}, // PLL Control Register 0 (PLL_PRD,PLL_FBD)
 	{0x0018, 0x0203}, // PLL_FRS,PLL_LBWS, PLL oscillation enable
 	{0x0000, 0x0005}, // Delay time
 	{0x0018, 0x0213}, // PLL_FRS,PLL_LBWS, PLL clock out enable
-	{0x0006, 0x012C}, // FIFO Control Register
-	{0x0008, 0x0037}, // DSI-TX Format setting
-	{0x0050, 0x003E}, // DSI-TX Pixel stream packet Data Type setting
 
-	{0x0140, 0x0000}, // D-PHY Clock lane enable
+	/* DPI Input Control */
+	{0x0006, 0x012C}, // FIFO Control Register
+
+	/* D-PHY Setting */
+	{0x0140, 0x0000}, // D-PHY Clock Lane enable
 	{0x0142, 0x0000},
-	{0x0144, 0x0000}, // D-PHY Data lane0 enable
+	{0x0144, 0x0000}, // D-PHY Data Lane0 enable
 	{0x0146, 0x0000},
-	{0x0148, 0x0000}, // D-PHY Data lane1 enable
+	{0x0148, 0x0000}, // D-PHY Data Lane1 enable
 	{0x014A, 0x0000},
-	{0x014C, 0x0000}, // D-PHY Data lane2 enable
+	{0x014C, 0x0000}, // D-PHY Data Lane2 enable
 	{0x014E, 0x0000},
-	{0x0150, 0x0000}, // D-PHY Data lane3 enable
+	{0x0150, 0x0000}, // D-PHY Data Lane3 enable
 	{0x0152, 0x0000},
-	{0x0100, 0x0203}, // D-PHY Clock lane Control TX
+
+	{0x0100, 0x0203}, // D-PHY Clock Lane Control TX
 	{0x0102, 0x0000},
-	{0x0104, 0x0203}, // D-PHY Data lane0 Control TX
+	{0x0104, 0x0203}, // D-PHY Data Lane0 Control TX
 	{0x0106, 0x0000},
-	{0x0108, 0x0203}, // D-PHY Data lane1 Control TX
+	{0x0108, 0x0203}, // D-PHY Data Lane1 Control TX
 	{0x010A, 0x0000},
-	{0x010C, 0x0203}, // D-PHY Data lane2 Control TX
+	{0x010C, 0x0203}, // D-PHY Data Lane2 Control TX
 	{0x010E, 0x0000},
-	{0x0110, 0x0203}, // D-PHY Data lane3 Control TX
+	{0x0110, 0x0203}, // D-PHY Data Lane3 Control TX
 	{0x0112, 0x0000},
 
+	/* DSI-TX PPI Control */
 	{0x0210, 0x1964}, // LINEINITCNT
 	{0x0212, 0x0000},
 	{0x0214, 0x0005}, // LPTXTIMECNT
@@ -75,13 +81,14 @@ static const struct bridge_register_set display_table[] = {
 	{0x0232, 0x0000},
 	{0x0234, 0x001F}, // HSTXVREGEN enable
 	{0x0236, 0x0000},
-	{0x0238, 0x0001}, // DSI clock Enable/Disable during LP
+	{0x0238, 0x0001}, // DSI clock enable/disable during LP
 	{0x023A, 0x0000},
 	{0x023C, 0x0005}, // BTACNTRL1
-	{0x023E, 0x0005}, // Lucien something wrong
+	{0x023E, 0x0005},
 	{0x0204, 0x0001}, // STARTCNTRL
 	{0x0206, 0x0000},
 
+	/* DSI-TX Timing Control */
 	{0x0620, 0x0001}, // Sync Pulse/Sync Event mode setting
 	{0x0622, 0x0020}, // V Control Register1
 	{0x0624, 0x001A}, // V Control Register2
@@ -92,10 +99,16 @@ static const struct bridge_register_set display_table[] = {
 
 	{0x0518, 0x0001}, // DSI Start
 	{0x051A, 0x0000},
+
+	/* Set to HS mode */
 	{0x0500, 0x0086}, // DSI lane setting, DSI mode=HS
 	{0x0502, 0xA300}, // bit set
 	{0x0500, 0x8000}, // Switch to DSI mode
-	{0x0502, 0xC300}, // LPCMD
+	{0x0502, 0xC300},
+
+	/* Host: RGB(DPI) input start */
+	{0x0008, 0x0037}, // DSI-TX Format setting
+	{0x0050, 0x003E}, // DSI-TX Pixel Stream packet Data Type setting
 	{0x0004, 0x0044}, // Configuration Control Register
 };
 
