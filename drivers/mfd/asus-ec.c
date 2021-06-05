@@ -336,6 +336,10 @@ static const struct asus_ec_initdata *asus_ec_detect(struct asus_ec_data *priv)
 	if (ret)
 		goto err_exit;
 
+	ret = asus_ec_log_info(priv, 0x0A, "PCBA version", NULL);
+	if (ret)
+		goto err_exit;
+
 	ret = asus_ec_magic_debug(priv);
 	if (ret)
 		goto err_exit;
