@@ -55,6 +55,9 @@ enum asus_ec_subdev_id
 	ID_EC_PART_BATTERY,
 #define EC_PART_BATTERY BIT(ID_EC_PART_BATTERY)
 
+	ID_EC_PART_BATTERY_SECONDARY,
+#define EC_PART_BATTERY_SECONDARY BIT(ID_EC_PART_BATTERY_SECONDARY)
+
 	ID_EC_PART_CHARGE_LED,
 #define EC_PART_CHARGE_LED BIT(ID_EC_PART_CHARGE_LED)
 
@@ -82,6 +85,9 @@ struct asus_ec_initdata
 static const struct mfd_cell asus_ec_subdev[] =
 {
 	[ID_EC_PART_BATTERY] = {
+		.name = "asusec-battery",
+	},
+	[ID_EC_PART_BATTERY_SECONDARY] = {
 		.name = "asusec-battery",
 	},
 	[ID_EC_PART_CHARGE_LED] = {
@@ -117,7 +123,8 @@ static const struct asus_ec_initdata asus_ec_model_info[] = {
 	{	/* Asus T114 Transformer Pad */
 		.model		= "ASUS-TF701T-PAD",
 		.name		= "pad",
-		.components	= EC_PART_BATTERY|EC_PART_CHARGE_LED,
+		.components	= EC_PART_BATTERY|EC_PART_CHARGE_LED|
+				  EC_PART_BATTERY_SECONDARY,
 		.flags		= EC_FLAG_SET_MODE,
 	},
 };
