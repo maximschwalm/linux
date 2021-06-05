@@ -1,0 +1,90 @@
+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+%YAML 1.2
+---
+$id: http://devicetree.org/schemas/mfd/asus-ec.yaml#
+$schema: http://devicetree.org/meta-schemas/core.yaml#
+
+title: Nuvoton NPCE795LA0BX Embedded Controller bindings
+
+description: |
+  This binding describes the Nuvoton NPCE795LA0BX Embedded Controller
+  attached to an I2C bus. Controller was hardly modified by Asus for
+  Transformer device series.
+
+maintainers:
+  - Michał Mirosław <mirq-linux@rere.qmqm.pl>
+  - Svyatoslav Ryhel <clamor95@gmail.com>
+
+properties:
+  compatible:
+    items:
+      - enum:
+          - asus,pad-ec  # Pad part of Asus Transformer
+          - asus,dock-ec # Dock part of Asus Transformer
+      - const: asus,ec
+  reg:
+    maxItems: 1
+
+  interrupts:
+    maxItems: 1
+
+  request-gpio:
+    maxItems: 1
+
+  asus,dockram:
+    maxItems: 1
+
+  battery: true
+
+  charge-full-design:
+    description:
+      Capasity of battery cell in mAh.
+
+  non-removable:
+    description:
+      Indidcates that battery is from PAD.
+  
+  address:
+    description:
+      Addres used for battery status read.
+    default: 14
+
+required:
+  - compatible
+  - reg
+  - interrupts
+  - request-gpio
+  - asus,dockram
+
+additionalProperties: false
+
+examples:
+  - |
+    i2c {
+      #address-cells = <1>;
+      #size-cells = <0>;
+
+      embedded-controller@15 {
+        compatible = "asus,pad-ec", "asus,ec";
+        reg = <0x15>;
+
+        interrupt-parent = <&gpio>;
+        interrupts = <146 IRQ_TYPE_LEVEL_LOW>;
+
+        request-gpio = <&gpio 129 1>;
+        asus,dockram = <&dockram_ec>;
+
+        battery {
+          address = <24>;
+          charge-full-design = <2940>;
+          non-removable;
+        };
+      };
+
+      dockram_ec: dockram@17 {
+        compatible = "asus,dockram";
+        reg = <0x17>;
+      };
+    };
+
+...
