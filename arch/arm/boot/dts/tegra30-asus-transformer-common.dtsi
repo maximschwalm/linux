@@ -1051,14 +1051,6 @@
 	i2c@7000c000 {		/*i2c1*/
 		status = "okay";
 		clock-frequency = <100000>;
-
-		/*
-		 * Fortemedia FM34NE voice processor 
-		 * dsp@60
-		 * vdd_1v8_dsp - 1.8v fixed regulator PP3 gpio
-		 * vdd_dsp_reg - 1.8v fixed regulator PBB6 gpio
-		 * reset-gpios - PO3 ACTIVE_LOW (fm34_reset, out, hi)
-		 */
 	};
 
 	i2c2: i2c@7000c400 {		/*i2c2*/
