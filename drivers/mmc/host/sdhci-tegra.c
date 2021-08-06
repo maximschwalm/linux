@@ -40,6 +40,7 @@
 #define SDHCI_CLOCK_CTRL_SDR50_TUNING_OVERRIDE		BIT(5)
 #define SDHCI_CLOCK_CTRL_PADPIPE_CLKEN_OVERRIDE		BIT(3)
 #define SDHCI_CLOCK_CTRL_SPI_MODE_CLKEN_OVERRIDE	BIT(2)
+#define SDHCI_CLOCK_CTRL_INPUT_IO_CLK				BIT(1)
 
 #define SDHCI_TEGRA_VENDOR_SYS_SW_CTRL			0x104
 #define SDHCI_TEGRA_SYS_SW_CTRL_ENHANCED_STROBE		BIT(31)
@@ -401,7 +402,8 @@ static void tegra_sdhci_reset(struct sdhci_host *host, u8 mask)
 
 	clk_ctrl |= SDHCI_CLOCK_CTRL_PADPIPE_CLKEN_OVERRIDE;
 	clk_ctrl &= ~(SDHCI_CLOCK_CTRL_TRIM_MASK |
-		      SDHCI_CLOCK_CTRL_SPI_MODE_CLKEN_OVERRIDE);
+		      SDHCI_CLOCK_CTRL_SPI_MODE_CLKEN_OVERRIDE |
+			  SDHCI_CLOCK_CTRL_INPUT_IO_CLK);
 
 	if (tegra_sdhci_is_pad_and_regulator_valid(host)) {
 		/* Erratum: Enable SDHCI spec v3.00 support */
