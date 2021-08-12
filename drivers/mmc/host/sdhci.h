@@ -478,6 +478,8 @@ struct sdhci_host {
 #define SDHCI_QUIRK2_USE_32BIT_BLK_CNT			(1<<18)
 /* Request a dummy write to stabilize the controller's internal clock */
 #define SDHCI_QUIRK2_INT_CLK_STABLE_REQ_DUMMY_REG_WRITE		(1<<19)
+/* Controller clock should be ON for register access */
+#define SDHCI_QUIRK2_REG_ACCESS_REQ_HOST_CLK		(1<<20)
 
 	int irq;		/* Device IRQ */
 	void __iomem *ioaddr;	/* Mapped address */
@@ -649,6 +651,10 @@ struct sdhci_ops {
 	void	(*hw_reset)(struct sdhci_host *host);
 	void    (*adma_workaround)(struct sdhci_host *host, u32 intmask);
 	void    (*card_event)(struct sdhci_host *host);
+	void	(*platform_ios_config_enter)(struct sdhci_host *host,
+		struct mmc_ios *ios);
+	void	(*platform_ios_config_exit)(struct sdhci_host *host,
+		struct mmc_ios *ios);
 	void	(*voltage_switch)(struct sdhci_host *host);
 	void	(*adma_write_desc)(struct sdhci_host *host, void **desc,
 				   dma_addr_t addr, int len, unsigned int cmd);

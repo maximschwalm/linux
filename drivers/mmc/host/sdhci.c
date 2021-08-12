@@ -2269,6 +2269,10 @@ void sdhci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	struct sdhci_host *host = mmc_priv(mmc);
 	u8 ctrl;
 
+	/* Do any required preparations prior to setting ios */
+	if (host->ops->platform_ios_config_enter)
+		host->ops->platform_ios_config_enter(host, ios);
+
 	if (ios->power_mode == MMC_POWER_UNDEFINED)
 		return;
 
@@ -2421,6 +2425,10 @@ void sdhci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	 */
 	if (host->quirks & SDHCI_QUIRK_RESET_CMD_DATA_ON_IOS)
 		sdhci_do_reset(host, SDHCI_RESET_CMD | SDHCI_RESET_DATA);
+
+	/* Platform specific handling post ios setting */
+	if (host->ops->platform_ios_config_exit)
+		host->ops->platform_ios_config_exit(host, ios);
 }
 EXPORT_SYMBOL_GPL(sdhci_set_ios);
 
