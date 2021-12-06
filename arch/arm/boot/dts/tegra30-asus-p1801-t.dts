@@ -1,0 +1,215 @@
+// SPDX-License-Identifier: GPL-2.0
+/dts-v1/;
+
+#include "tegra30-asus-transformer-common.dtsi"
+
+/ {
+	model = "Asus Transformer AIO P1801-T";
+	compatible = "asus,p1801-t", "nvidia,tegra30";
+
+	aliases {
+		display0 = &hdmi;
+		/delete-property/ display1;
+	};
+
+	host1x@50000000 {
+		hdmi@54280000 {
+			clocks = <&tegra_car TEGRA30_CLK_HDMI>,
+				 <&tegra_car TEGRA30_CLK_PLL_D_OUT0>;
+				 
+			status = "okay";
+
+			hdmi-supply = <&hdmi_5v0_sys>;
+			pll-supply = <&vdd_1v8_vio>;
+			vdd-supply = <&vdd_3v3_sys>;
+
+			port@0 {
+				hdmi_output: endpoint {
+					remote-endpoint = <&hdmi_input>;
+				};
+			};
+		};
+	};
+
+	gpio@6000d000 {
+		init-lpm-in-hog {
+			gpios = <TEGRA_GPIO(B, 1) GPIO_ACTIVE_HIGH>;
+		};
+
+		/delete-node/ usb-charge-limit-hog;
+	};
+
+	pinmux@70000868 {
+		pinctrl-names = "default";
+		pinctrl-0 = <&state_default>;
+
+		state_default: pinmux {
+			lcd_pwr2_pc6 {
+				nvidia,pins = "lcd_pwr2_pc6",
+						"lcd_dc1_pd2";
+				nvidia,function = "displaya";
+				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
+				nvidia,tristate = <TEGRA_PIN_ENABLE>;
+				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+			};
+			pbb3 {
+				nvidia,pins = "pbb3";
+				nvidia,function = "vgp3";
+				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
+				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+			};
+			pbb7 {
+				nvidia,pins = "pbb7";
+				nvidia,function = "i2s4";
+				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
+				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+			};
+			kb_row7_pr7 {
+				nvidia,pins = "kb_row7_pr7";
+				nvidia,function = "kbc";
+				nvidia,pull = <TEGRA_PIN_PULL_UP>;
+				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+			};
+			gmi_cs4_n_pk2 {
+				nvidia,pins = "gmi_cs4_n_pk2";
+				nvidia,function = "gmi";
+				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
+				nvidia,tristate = <TEGRA_PIN_ENABLE>;
+				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+			};
+
+			/* P1801 specific pinmux */
+			key_mode {
+				nvidia,pins = "gmi_cs4_n_pk2";
+				nvidia,function = "rsvd1";
+				nvidia,pull = <TEGRA_PIN_PULL_UP>;
+				nvidia,tristate = <TEGRA_PIN_ENABLE>;
+				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+			};
+			splashtop {
+				nvidia,pins = "gmi_cs6_n_pi3";
+				nvidia,function = "nand_alt";
+				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
+				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+			};
+			w8_detect {
+				nvidia,pins = "gmi_cs7_n_pi6";
+				nvidia,function = "nand_alt";
+				nvidia,pull = <TEGRA_PIN_PULL_UP>;
+				nvidia,tristate = <TEGRA_PIN_ENABLE>;
+				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+			};
+			tp_vendor {
+				nvidia,pins = "kb_row6_pr6";
+				nvidia,function = "kbc";
+				nvidia,pull = <TEGRA_PIN_PULL_UP>;
+				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+			};
+			tp_power {
+				nvidia,pins = "kb_row8_ps0";
+				nvidia,function = "kbc";
+				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
+				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+			};
+		};
+	};
+
+	uartc: serial@70006200 {
+		/* Azurewave AW-AH691 BCM43241B1 */
+	};
+
+	i2c1: i2c@7000c000 {
+		clock-frequency = <280000>;
+	};
+
+	/delete-node/ i2c-dock;
+
+	i2c3: i2c@7000c500 {
+		accelerometer@f {
+			compatible = "kionix,kxtf9";
+			reg = <0x0f>;
+
+			interrupt-parent = <&gpio>;
+			interrupts = <TEGRA_GPIO(O, 5) IRQ_TYPE_EDGE_RISING>;
+
+			vdd-supply = <&vdd_1v8_vio>;
+			vddio-supply = <&vdd_1v8_vio>;
+
+			mount-matrix =   "0", "-1",  "0",
+					"-1",  "0",  "0",
+					 "0",  "0", "-1";
+		};
+
+		/delete-node/ light-sensor@1c;
+		/delete-node/ gyroscope@68;
+	};
+
+	hdmi_ddc: i2c@7000c700 {
+		clock-frequency = <33000>;
+	};
+
+    connector {
+        compatible = "hdmi-connector";
+        label = "hdmi";
+
+		ddc-i2c-bus = <&hdmi_ddc>;
+        type = "a";
+
+        port {
+            connector: endpoint {
+                remote-endpoint = <&receiver>;
+            };
+        };
+    };
+
+	hdmi: bridge {
+		compatible = "mstar,tsumu88adt3-lf-1";
+		enable-gpios = <&gpio TEGRA_GPIO(H, 4) GPIO_ACTIVE_HIGH>;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				hdmi_input: endpoint {
+					remote-endpoint = <&hdmi_output>;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				receiver: endpoint {
+					remote-endpoint = <&connector>;
+				};
+			};
+		};
+
+	pad_battery: pad-battery {
+		compatible = "simple-battery";
+		charge-full-design-microamp-hours = <5136000>;
+		energy-full-design-microwatt-hours = <38000000>;
+		operating-range-celsius = <0 45>;
+	};
+
+	pad-keys {
+		mode {
+			label = "Mode";
+			gpios = <&gpio TEGRA_GPIO(K, 2) GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_MODE>;
+			debounce-interval = <10>;
+			wakeup-event-action = <EV_ACT_ASSERTED>;
+			wakeup-source;
+		};
+	};
+
+	/delete-node/ regulator-panel;
+	/delete-node/ regulator-bl;
+	/delete-node/ backlight;
+};
