@@ -1,0 +1,16 @@
+config ASUS_USB_TS_POWER
+	tristate "Asus USB HID touchscreen power controller"
+	depends on GPIOLIB && OF
+	select HID_MULTITOUCH
+	default n
+	help
+	  Say Y to enable support for the USB HID touchscreen power controller
+	  in the Asus Transformer AiO P1801-T.
+
+config ASUS_USB_CAM_POWER
+	tristate "Asus UVC webcam power controller"
+	depends on GPIOLIB && OF
+	default n
+	help
+	  Say Y to enable support for the UVC webcam power controller in the
+	  Asus Transformer AiO P1801-T.

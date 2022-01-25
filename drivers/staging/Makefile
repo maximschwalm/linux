@@ -36,3 +36,4 @@ obj-$(CONFIG_FIELDBUS_DEV)     += fieldbus/
 obj-$(CONFIG_QLGE)		+= qlge/
 obj-$(CONFIG_WFX)		+= wfx/
 obj-$(CONFIG_P4WIFI)		+= p4wifi/
+obj-y				+= p1801-t/
