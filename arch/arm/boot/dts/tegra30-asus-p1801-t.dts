@@ -2060,9 +2060,13 @@
 };
 
 &emc_icc_dvfs_opp_table {
-	/delete-node/ opp-900000000-1350;
+	opp-800000000-1300 {
+		opp-supported-hw = <0x0006>;
+	};
 };
 
 &emc_bw_dfs_opp_table {
-	/delete-node/ opp-900000000;
+	opp-800000000 {
+		opp-supported-hw = <0x0006>;
+	};
 };
