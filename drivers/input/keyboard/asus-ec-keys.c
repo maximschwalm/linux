@@ -11,6 +11,8 @@
 #include <linux/slab.h>
 
 #define ASUSEC_EXT_KEY_CODES 0x20
+#define ASUSEC_TOUCHPAD_ON   0xF4D4
+#define ASUSEC_TOUCHPAD_OFF  0xF5D4
 
 struct asusec_keys_data {
 	struct notifier_block nb;
@@ -208,6 +210,38 @@ static void asusec_keys_setup_keymap(struct asusec_keys_data *priv)
 	}
 }
 
+static ssize_t touchpad_store(struct device *dev,
+			      struct device_attribute *attr,
+			      const char *buf, size_t count)
+{
+	struct asusec_keys_data *priv = dev_get_drvdata(dev);
+	int state;
+
+	/* Set the TouchPad on/off, 0 - Disable | 1 - Enable */
+	if (sscanf(buf, "%i", &state)) {
+		state = asusec_i2c_command(priv->ec, ASUSEC_TOUCHPAD_ON);
+		if (state)
+			return state;
+	} else {
+		state = asusec_i2c_command(priv->ec, ASUSEC_TOUCHPAD_OFF);
+		if (state)
+			return state;
+	}
+
+	return count;
+}
+
+static DEVICE_ATTR_WO(touchpad);
+
+static struct attribute *asusec_keys_attributes[] = {
+	&dev_attr_touchpad.attr,
+	NULL
+};
+
+static const struct attribute_group asusec_keys_attr_group = {
+	.attrs = asusec_keys_attributes,
+};
+
 static int asusec_keys_probe(struct platform_device *pdev)
 {
 	struct asusec_info *ec = asusec_cell_to_ec(pdev);
@@ -242,6 +276,11 @@ static int asusec_keys_probe(struct platform_device *pdev)
 			ret);
 		return ret;
 	}
+
+	ret = devm_device_add_group(&pdev->dev, &asusec_keys_attr_group);
+	if (ret)
+		return dev_err_probe(&pdev->dev, ret,
+				     "failed to create sysfs attributes\n");
 
 	asusec_input_handler.private = priv;
 
