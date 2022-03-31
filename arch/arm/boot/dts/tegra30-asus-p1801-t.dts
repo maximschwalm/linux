@@ -839,8 +839,8 @@
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
 
-			/* Vibrator control */
-			vibrator {
+			/* USB2 VBUS control */
+			usb2_vbus_control {
 				nvidia,pins = "gmi_ad15_ph7";
 				nvidia,function = "nand";
 				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
@@ -1467,6 +1467,16 @@
 		vbus-supply = <&vdd_5v0_sys>;
 	};
 
+	/* mini-USB port */
+	usb@7d004000 {
+		status = "okay";
+	};
+
+	usb-phy@7d004000 {
+		status = "okay";
+		vbus-supply = <&usb2_vbus>;
+	};
+
 	/* Dock's USB port */
 	usb@7d008000 {
 		status = "okay";
@@ -1630,6 +1640,17 @@
 		gpio = <&gpio TEGRA_GPIO(D, 0) GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		vin-supply = <&vdd_3v3_sys>;
+	};
+
+	usb2_vbus: regulator-usb2 {
+		compatible = "regulator-fixed";
+		regulator-name = "usb3_vbus";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		enable-active-high;
+		gpio = <&gpio TEGRA_GPIO(H, 7) GPIO_ACTIVE_HIGH>;
+		gpio-open-drain;
+		vin-supply = <&vdd_5v0_sys>;
 	};
 
 	hdmi_5v0_sys: regulator-hdmi {
