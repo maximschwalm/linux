@@ -1781,6 +1781,18 @@
 		};
 	};
 
+
+	usb-touchscreen {
+		compatible = "usb-touchscreen", "asus,usb-device";
+		reset-gpios = <&gpio TEGRA_GPIO(H, 6) GPIO_ACTIVE_HIGH>;
+		power-gpios = <&gpio TEGRA_GPIO(S, 0) GPIO_ACTIVE_HIGH>;
+	};
+
+	usb-webcam {
+		compatible = "usb-webcam", "asus,usb-device";
+		power-gpios = <&gpio TEGRA_GPIO(BB, 4) GPIO_ACTIVE_HIGH>;
+	};
+
 	memory-controller@7000f000 {
 		emc-timings-3 {
 			/* P1801 Micron 2GB 800MHZ */
