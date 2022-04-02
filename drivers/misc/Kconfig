@@ -59,6 +59,15 @@ config ASUS_DOCKRAM
 	  To compile this driver as a module, choose M here: the
 	  module will be called asus-dockram.
 
+config ASUS_USB_DEVICE
+	tristate "Asus USB HID power controller"
+	depends on GPIOLIB && OF
+	help
+	  Select this if you are building for Asus Transformer AiO P1801-T.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called asus-usb-device.
+
 config DUMMY_IRQ
 	tristate "Dummy IRQ handler"
 	help
